@@ -14,15 +14,15 @@ O primeiro piloto será em uma câmera fixa no laboratório, uma zona e regras d
 
 | Ordem | Entrega | Frente de referência |
 | --- | --- | --- |
-| 1 | [fechar regras, governança e critérios de aceite ](https://github.com/diegovitor90/visao-do-porto/issues/2) | Hugo como referência de governança; composição e validação operacional a confirmar. |
-| 2 | [conectar câmera e detectar pessoas com ByteTrack ](https://github.com/diegovitor90/visao-do-porto/issues/3) | IA a definir; Diego na integração; Jason no painel. |
-| 3 | [detectar capacete/colete e associar EPI à pessoa ](https://github.com/diegovitor90/visao-do-porto/issues/4) | IA a definir; Diego recebe observações; Jason exibe estados. |
+| 1 | [fechar regras, governança e critérios de aceite ](https://github.com/diegovitor90/visao-do-porto/issues/2) | Hugo lidera Requisitos, Gestão e BI, com Victor Santos e Isabelle Rodrigues; validação operacional a confirmar. |
+| 2 | [conectar câmera e detectar pessoas com ByteTrack ](https://github.com/diegovitor90/visao-do-porto/issues/3) | Gustavo lidera IA, com Isabelle e Micaelle; Diego/Sophia na integração; Jason/Luiza/Victor no painel. |
+| 3 | [detectar capacete/colete e associar EPI à pessoa ](https://github.com/diegovitor90/visao-do-porto/issues/4) | Gustavo lidera IA, com Isabelle e Micaelle; back-end recebe observações; front-end exibe estados. |
 | 4 | [editar zonas e aplicar regras com persistência temporal ](https://github.com/diegovitor90/visao-do-porto/issues/5) | Jason: editor; Diego: regras e eventos; Hugo: fontes. |
 | 5 | [vincular trajetória ao cadastro e consultar treinamentos ](https://github.com/diegovitor90/visao-do-porto/issues/6) | Diego: cadastro/regras; Jason: confirmação visual; Hugo: registros fictícios. |
 | 6 | [painel, evidências, revisão e histórico de alertas ](https://github.com/diegovitor90/visao-do-porto/issues/7) | Jason: interface; Diego: API/persistência; Hugo: critérios de revisão. |
-| 7 | [preparar dados e executar teste integrado no laboratório ](https://github.com/diegovitor90/visao-do-porto/issues/8) | IA a definir; todas as frentes; Hugo consolida critérios. |
+| 7 | [preparar dados e executar teste integrado no laboratório ](https://github.com/diegovitor90/visao-do-porto/issues/8) | Gustavo lidera IA e avaliação técnica, com Isabelle e Micaelle; todas as frentes participam; Hugo coordena os critérios. |
 
-A tarefa [#1](https://github.com/diegovitor90/visao-do-porto/issues/1) acompanha o conjunto. Governança e plano de avaliação começam junto com câmera/rastreamento. EPIs e editor de zonas podem avançar em paralelo com contrato comum. Vínculo de treinamento depende da trajetória e das regras; integração final depende de todas as frentes. Responsável por IA e prazos permanecem a confirmar.
+A tarefa [#1](https://github.com/diegovitor90/visao-do-porto/issues/1) acompanha o conjunto. Governança e plano de avaliação começam junto com câmera/rastreamento. EPIs e editor de zonas podem avançar em paralelo com contrato comum. Vínculo de treinamento depende da trajetória e das regras; integração final depende de todas as frentes. Gustavo Sousa lidera IA; executores de subtarefas e prazos permanecem a combinar.
 
 ## Arquitetura e contratos mínimos
 
@@ -71,7 +71,7 @@ EPIs especializados, VLM, reconhecimento facial, leitura automatizada de QR, rei
 
 ## Organização e encaminhamentos
 
-Estrutura sugerida: src/vision, src/registry, src/rules, src/api, configs, tests e docs. Adaptar ao código existente quando disponibilizado. Jason é referência de front-end, Diego de back-end, Hugo de governança; IA e composição das equipes ainda precisam de definição.
+Estrutura sugerida: src/vision, src/registry, src/rules, src/api, configs, tests e docs. Adaptar ao código existente quando disponibilizado. Líderes: Jason no front-end, Diego no back-end, Hugo em Requisitos/Gestão/BI e Gustavo em IA. Composição das equipes registrada abaixo.
 
 Entregas de 30/10 e verificação da atividade VLI foram informadas como concluídas por Diego. Compartilhamento das visitas, nova visita, frequência das reuniões, sigla LDL e disponibilidade de bases permanecem a confirmar. O prazo 11/11 é histórico; novo prazo de demonstração deve ser combinado sem presumir conclusão. Manter escrita dos artigos em paralelo.
 
@@ -83,3 +83,16 @@ Entregas de 30/10 e verificação da atividade VLI foram informadas como conclu�
 - https://docs.ultralytics.com/pt/guides/steps-of-a-cv-project/
 - https://github.com/FoundationVision/ByteTrack
 - Arquitetura indicada: https://excalidraw.com/#json=bfOGqeFUAc2f7SfcG8_Iw,YeRc1H65m6-Lo3VBv4mUnQ
+
+## Equipes e lideranças
+
+Composição conforme a planilha de atribuições enviada por Diego; lideranças informadas por ele em 12/11/2026.
+
+| Frente | Líder | Integrantes |
+| --- | --- | --- |
+| Requisitos, Gestão e BI | Hugo Diniz | Victor Santos, Hugo Diniz e Isabelle Rodrigues |
+| Front-end e UX | Jason Araujo | Luiza, Victor Santos e Jason Araujo |
+| Back-end | Diego Souza | Diego Souza e Sophia |
+| IA e Visão Computacional | Gustavo Sousa | Isabelle Rodrigues, Gustavo Sousa e Micaelle Susy |
+
+Liderança de frente não define automaticamente o executor de cada subtarefa. Distribuição individual e prazos serão combinados pelas equipes. Contas GitHub dos demais integrantes ainda não foram verificadas para atribuição no campo Assignees.
