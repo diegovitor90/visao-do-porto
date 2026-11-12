@@ -1,95 +1,85 @@
-# Visão do Porto: plano do primeiro MVP
+# Visão do Porto: plano do MVP
 
-## Situação
+Revisão 2, 12/11/2026. Planejamento corrigido a partir do documento de requisitos v1.0 (26/10) e da ata de 28/10. Código do protótipo ainda precisa ser disponibilizado; todas as entregas técnicas abaixo estão abertas.
 
-Planejamento inicial. O repositório ainda não contém o código do protótipo mostrado no vídeo. Este documento não atesta integrações implementadas nem validação em ambiente portuário. A arquitetura completa é uma visão de evolução; o primeiro incremento terá um recorte controlado.
+## Escopo e evolução registrada
 
-## Objetivo proposto
+O núcleo do MVP inclui câmera, pessoas, capacete e colete, associação pessoa–EPI, zonas configuráveis, regras, persistência temporal, alertas com evidência, revisão e histórico. O plano anterior colocou EPIs para depois indevidamente; esta revisão corrige essa omissão.
 
-Em uma câmera fixa do laboratório, detectar e acompanhar pessoas, permitir que um operador vincule uma trajetória a um cadastro fictício e mostrar a situação do treinamento exigido por uma zona. O piloto apoia a conferência humana; não controla máquinas ou libera acesso físico automaticamente.
+A ata tratava identificação/autorização/treinamento como ampliação a deliberar. Em 12/11, Diego solicitou o diferencial ByteTrack + vínculo cadastral + treinamento. Essa evolução entra no piloto com dados fictícios e confirmação manual, sem atribuir à ata uma decisão que ela não registrou. Não houve validação coletiva documentada dessas novas escolhas.
 
-Diferencial proposto: integração entre trajetória, cadastro, treinamento e contexto da zona. ByteTrack é um componente existente, não uma inovação criada pelo grupo.
+O primeiro piloto será em uma câmera fixa no laboratório, uma zona e regras de exemplo explicitamente identificadas. Treinamento válido é um requisito possível, não sinônimo de autorização. ByteTrack mantém trajetórias, não comprova identidade civil. O piloto apoia revisão humana e não controla máquinas ou libera acesso físico automaticamente.
 
-## Arquitetura do incremento
+## Entregas e dependências
 
-- Vídeo ou webcam -> detector de pessoas -> ByteTrack -> trajetórias.
-- Operador confirma o vínculo da pessoa visível com um cadastro de demonstração, em ponto de entrada com uma pessoa por vez.
-- Serviço de cadastro fornece treinamento, conclusão, validade e situação da verificação do registro.
-- Serviço de regras relaciona zona ativa, atividade, treinamento exigido e permissão de acesso.
-- Painel exibe trajetória, vínculo e situação; eventos registram motivo, horário e origem da decisão.
-
-O identificador técnico deve incluir câmera, sessão e track_id. O worker_id é separado e persistente. Um ID de trajetória não comprova identidade. A ocorrência de treinamento no cadastro não equivale, isoladamente, a autorização de acesso.
-
-## Etapas adaptadas ao projeto
-
-| Etapa | Trabalho do grupo | Entrega verificável |
+| Ordem | Entrega | Frente de referência |
 | --- | --- | --- |
-| 1. Objetivos | Fechar uma câmera, uma zona, um treinamento de exemplo, quem confirma o vínculo e quais estados serão exibidos. | Escopo e critérios de aceite. |
-| 2. Dados | Gravar sequências controladas com uso autorizado; marcar pessoas, trajetórias e entradas/saídas. Criar cadastros fictícios com treinamento válido, vencido, ausente e não verificado. | Vídeos e referências de avaliação; registros fictícios separados dos dados visuais. |
-| 3. Separação dos dados | Reservar sessões completas para teste; não distribuir quadros vizinhos do mesmo vídeo entre ajuste e teste. Se houver treinamento, separar treino/validação/teste antes de aumentar dados. | Manifesto de arquivos e divisão por sessão. |
-| 4. Solução inicial | Avaliar detector pré-treinado de pessoas com ByteTrack. Implementar vínculo manual, consulta de treinamento e regra de zona. Ajuste fino do detector só após medir falhas. | Fluxo executável de ponta a ponta. |
-| 5. Avaliação e ajustes | Medir perdas de pessoas, trocas de ID, vínculos incorretos, alertas indevidos e latência no equipamento usado. | Relatório da configuração inicial e erros observados. |
-| 6. Teste reservado | Testar cruzamento de pessoas, oclusão, saída/reentrada, reinício, cadastro sem treinamento e câmera desconectada. | Resultados em sequências não usadas no ajuste. |
-| 7. Piloto integrado | Conectar processamento ao painel existente após disponibilização do código; registrar versões e instruções. | Demonstração no laboratório e roteiro reproduzível. |
-| 8. Acompanhamento | Revisar ocorrências, registrar limitações e selecionar o próximo incremento. | Histórico de versões e tarefas priorizadas. |
+| 1 | [fechar regras, governança e critérios de aceite ](https://github.com/diegovitor90/visao-do-porto/issues/2) | Hugo como referência de governança; composição e validação operacional a confirmar. |
+| 2 | [conectar câmera e detectar pessoas com ByteTrack ](https://github.com/diegovitor90/visao-do-porto/issues/3) | IA a definir; Diego na integração; Jason no painel. |
+| 3 | [detectar capacete/colete e associar EPI à pessoa ](https://github.com/diegovitor90/visao-do-porto/issues/4) | IA a definir; Diego recebe observações; Jason exibe estados. |
+| 4 | [editar zonas e aplicar regras com persistência temporal ](https://github.com/diegovitor90/visao-do-porto/issues/5) | Jason: editor; Diego: regras e eventos; Hugo: fontes. |
+| 5 | [vincular trajetória ao cadastro e consultar treinamentos ](https://github.com/diegovitor90/visao-do-porto/issues/6) | Diego: cadastro/regras; Jason: confirmação visual; Hugo: registros fictícios. |
+| 6 | [painel, evidências, revisão e histórico de alertas ](https://github.com/diegovitor90/visao-do-porto/issues/7) | Jason: interface; Diego: API/persistência; Hugo: critérios de revisão. |
+| 7 | [preparar dados e executar teste integrado no laboratório ](https://github.com/diegovitor90/visao-do-porto/issues/8) | IA a definir; todas as frentes; Hugo consolida critérios. |
 
-O treinamento do modelo de IA e o treinamento profissional do trabalhador são processos distintos. O segundo vem de registros administrativos verificados, não de inferência visual.
+A tarefa [#1](https://github.com/diegovitor90/visao-do-porto/issues/1) acompanha o conjunto. Governança e plano de avaliação começam junto com câmera/rastreamento. EPIs e editor de zonas podem avançar em paralelo com contrato comum. Vínculo de treinamento depende da trajetória e das regras; integração final depende de todas as frentes. Responsável por IA e prazos permanecem a confirmar.
 
-## Regras mínimas propostas
+## Arquitetura e contratos mínimos
 
-1. Vínculo inexistente ou duvidoso: identificação não confirmada. Não declarar treinamento ausente apenas por falta de identidade.
-2. Treinamento: válido, vencido, ausente ou não verificado. Considerar conclusão, verificação e validade segundo regra cadastrada.
-3. Perda de trajetória, reinício ou troca de câmera: invalidar o vínculo para decisão até nova confirmação. Trocas silenciosas de ID também são possíveis e precisam ser testadas; não há garantia de identidade contínua.
-4. Entrada em polígono é um fato geométrico. Classificar violação depende da zona ativa e das regras aplicáveis.
-5. Registrar separadamente situação de treinamento e permissão. Exibir o motivo e os dados usados.
+Captura -> detecção de pessoas/EPIs -> ByteTrack e associação pessoa–EPI -> zona/contexto cadastrado -> regras e persistência -> evento -> painel/revisão/histórico.
 
-## Primeira tarefa técnica
+O cadastro e o vínculo manual alimentam a consulta de treinamento quando exigida pela zona, sem impedir a observação anônima de EPIs.
 
-Implementar detecção de pessoas + ByteTrack com vínculo manual a cadastro fictício e consulta de treinamento. Para a primeira demonstração, manter uma pessoa por vez na área de vinculação. QR Code automatizado fica para incremento posterior; leitura de QR não garante por si só que o portador é o titular.
+- IA para back-end: camera_id, session_id, timestamp, frame_id, track_id, bbox, classe/confiança, EPIs associados/confiança e qualidade da observação.
+- Regras: zone_id, geometria e resolução de referência, contexto, atividade, condição ativa, EPIs/treinamentos exigidos, origem, item, versão e validação.
+- Vínculo: worker_id fictício separado da chave camera_id + session_id + track_id, operador confirmador, horário e estado da associação.
+- Evento para painel: event_id, início/fim, zona, câmera, tipo, regra/versão, motivo, evidência, revisão e autor/data da revisão.
+- Estados separados: EPI detectado/possível ausência/indeterminado; identidade confirmada/não confirmada; treinamento válido/vencido/ausente/não verificado; permissão conforme regra.
 
-### Critérios de aceite
+Não transformar confiança de detecção em confiança de identidade. Perda/reinício ou dúvida no vínculo exige nova confirmação. Trocas silenciosas de ID precisam ser medidas. Não detectar EPI em uma observação ruim não prova ausência. Falha de câmera deve gerar estado técnico, sem conservar o último resultado como atual.
 
-- Fonte de vídeo configurável e caixas com IDs visíveis.
-- Cadastro persistido de demonstração, sem dados reais de trabalhadores.
-- Operador seleciona trajetória ativa e confirma cadastro; registrar confirmação.
-- Painel mostra ID técnico, cadastro vinculado e situação do treinamento exigido.
-- Casos válido, vencido, ausente, não verificado e sem vínculo demonstrados.
-- Perda/reinício invalida vínculo; indisponibilidade de câmera ou cadastro não reutiliza estado antigo como válido.
-- Registrar configuração, equipamento, FPS e latência do fluxo; metas numéricas serão acordadas após a medição inicial.
-- Reportar número de associações incorretas e trocas de ID, com denominadores; nenhum erro observado em poucos testes prova segurança operacional.
+## Aceite do conjunto
 
-## Dados e contrato proposto
+- Câmera conectada, timestamps, detecções e IDs visíveis; queda e recuperação demonstradas.
+- Capacete e colete associados à pessoa, incluindo exemplos próximos/ocultos.
+- Zona desenhada na imagem, editável/desativável e recalibrável; contexto cadastrado, sem VLM.
+- Verificação em dois níveis (presença e adequação à zona), evidência insuficiente e persistência configurável.
+- Evento sem duplicação por quadro, com evidência, origem/versionamento da regra e explicação em português.
+- Operador confirma/descarta e consulta histórico por filtros, sob autenticação/perfis.
+- Cadastro fictício vinculado manualmente à trajetória; estados de treinamento e perda do vínculo demonstrados separadamente da permissão.
+- Metas numéricas, dados de referência, condições do teste e resultados documentados; avaliar também ocorrências não alertadas.
 
-Entidades: trabalhador fictício; treinamento; registro de conclusão/verificação/validade; zona; regra da zona; vínculo de trajetória; evento.
+Critérios detalhados estão nas tarefas. Não marcar o MVP concluído só porque os documentos ou telas existem.
 
-Saída para o painel: camera_id, session_id, track_id, timestamp, bbox, detection_confidence, worker_id opcional, binding_status, zone_id, training_status, access_status e reason.
+## Ciclo de desenvolvimento e avaliação
 
-Não utilizar a confiança do detector como confiança de identidade. Documentar a semântica de cada campo antes de integrar front-end e back-end.
+Seguir o guia Ultralytics como orientação: objetivos, dados, preparação, solução inicial, avaliação, teste, implantação e acompanhamento. Começar com modelos pré-treinados; ajustar/treinar somente se a avaliação justificar. O treinamento profissional do trabalhador vem de registros verificados e não do modelo visual.
 
-## Organização sugerida
+Gravar sequências autorizadas e anotar pessoas, EPIs, trajetórias e eventos. Separar sessões inteiras para ajuste e teste, evitando quadros vizinhos em conjuntos diferentes. Se houver treino, dividir antes do aumento de dados. Não usar o teste reservado para ajustar parâmetros.
 
-- src/vision: captura, detecção e rastreamento.
-- src/registry: cadastros e registros de treinamento.
-- src/rules: zonas e condições.
-- src/api: contrato com o painel.
-- tests: vínculo, validade, perda de sessão e eventos.
-- configs: configuração sem credenciais.
-- docs: arquitetura, dados, instalação e avaliações.
+Medir precisão/recall por classe e evento, falsos alarmes por período, eventos perdidos, trocas de ID, erros de associação EPI/pessoa e cadastro/trajetória, FPS e latência incluindo p95. Explicitar denominadores, hardware, versões e parâmetros. Metas numéricas devem ser acordadas após a medição inicial e antes do aceite. Avaliação em laboratório não comprova desempenho portuário.
 
-Essa estrutura é proposta; adaptar ao código existente quando ele for enviado. Não versionar credenciais, vídeos de trabalhadores, documentos pessoais ou certificados reais. Antes de incorporar dependências/modelos, conferir suas licenças e registrar versões.
+## Governança e segurança dos dados
 
-## Divisão de trabalho proposta a partir das referências do grupo
+Definir fontes/versões das regras, matriz de permissões, retenção, proteção e descarte. Considerar as propostas de Isabelle sobre procedimentos do Itaqui, qualidade da imagem e técnico de segurança, distinguindo sugestão de decisão validada. Conferir as fontes normativas vigentes antes de converter requisitos em obrigações legais.
 
-Diego: back-end e vínculo cadastral. Jason: interface e exibição de estados. Hugo: requisitos, organização e registros de treinamento de demonstração. Responsável por IA/visão computacional: ainda a confirmar. Não foram atribuídas tarefas a contas GitHub não verificadas.
+Cadastros do piloto são fictícios. Não versionar senhas RTSP, imagens identificáveis, documentos ou certificados reais no Git. Verificar licenças de código, modelos e datasets antes da incorporação.
 
-## Evolução após o primeiro incremento
+## Fora deste incremento
 
-EPIs (capacete/colete), leitura de QR, múltiplas câmeras, solicitações do campo, integração com registros institucionais e relatórios. Reconhecimento facial e associação entre câmeras não fazem parte desta primeira entrega.
+EPIs especializados, VLM, reconhecimento facial, leitura automatizada de QR, reidentificação entre câmeras, integração real com bases institucionais, relatórios agregados RF22, contêineres, quedas e execução em borda RNF19. Escala física multicâmera e avaliação em condições portuárias são evoluções; testar isolamento de falha com fontes simuladas no piloto.
 
-## Referências
+## Organização e encaminhamentos
 
-- Guia de etapas: https://docs.ultralytics.com/pt/guides/steps-of-a-cv-project/
-- ByteTrack oficial: https://github.com/FoundationVision/ByteTrack
-- Arquitetura indicada pelo grupo: https://excalidraw.com/#json=bfOGqeFUAc2f7SfcG8_Iw,YeRc1H65m6-Lo3VBv4mUnQ
+Estrutura sugerida: src/vision, src/registry, src/rules, src/api, configs, tests e docs. Adaptar ao código existente quando disponibilizado. Jason é referência de front-end, Diego de back-end, Hugo de governança; IA e composição das equipes ainda precisam de definição.
 
-Plano proposto em 12/11/2026. O guia orienta o ciclo de visão computacional; cadastro, vínculo, regras e critérios acima são adaptações ao Visão do Porto.
+Entregas de 30/10 e verificação da atividade VLI foram informadas como concluídas por Diego. Compartilhamento das visitas, nova visita, frequência das reuniões, sigla LDL e disponibilidade de bases permanecem a confirmar. O prazo 11/11 é histórico; novo prazo de demonstração deve ser combinado sem presumir conclusão. Manter escrita dos artigos em paralelo.
+
+## Referências e rastreabilidade
+
+- [Matriz completa: RF01–RF22, RNF01–RNF19 e ata](RASTREABILIDADE.md).
+- Documento de Requisitos Sistema de Visão Computacional para Segurança Portuária, v1.0, 26/10/2026, fornecido por Diego.
+- Ata_VC_UNDB_28-10-2026(1).docx, fornecida por Diego, incluindo complemento de arquitetura.
+- https://docs.ultralytics.com/pt/guides/steps-of-a-cv-project/
+- https://github.com/FoundationVision/ByteTrack
+- Arquitetura indicada: https://excalidraw.com/#json=bfOGqeFUAc2f7SfcG8_Iw,YeRc1H65m6-Lo3VBv4mUnQ
