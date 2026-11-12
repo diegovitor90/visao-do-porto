@@ -45,7 +45,7 @@ Revisão de planejamento em 12/11/2026. Fontes lidas: Documento de Requisitos de
 | --- | --- |
 | Pessoas, capacete e colete; contexto cadastrado | Restaurado como núcleo do MVP (#3–#5). |
 | Laboratório da UNDB | Ambiente de demonstração #8; sem alegar validação no porto. |
-| Diego back-end, Jason front-end, Hugo governança | Referências preservadas; responsáveis individuais/prazos e IA a confirmar em #2. |
+| Diego back-end, Jason front-end, Hugo governança | Histórico preservado; composição atual e quatro líderes registrados abaixo. Executores de subtarefas e prazos a combinar em #2. |
 | Contratos IA/back-end/front-end | Campos mínimos no plano; especificação e integração #3, #5 e #7. |
 | Regras Itaqui, qualidade de imagem, técnico de segurança | Contribuições de Isabelle transformadas em tarefas de especificação/validação #2–#3 e implementação conforme decisões. Não apresentadas como já validadas. |
 | Face ID, QR, autorização e treinamento | Ideias da ata. Atualização de Diego inclui treinamento e vínculo manual no piloto (#6); demais meios de identificação continuam posteriores. |
@@ -60,3 +60,16 @@ Revisão de planejamento em 12/11/2026. Fontes lidas: Documento de Requisitos de
 | Artigos em paralelo | Preservar produção acadêmica sem apresentar resultados do piloto antes de medidos. |
 
 A ata é histórica. Esta revisão altera o planejamento do repositório, não reescreve deliberações do grupo. Não há alegação de aprovação coletiva das novas escolhas técnicas.
+
+## Equipes e lideranças
+
+Composição conforme a planilha de atribuições enviada por Diego; lideranças informadas por ele em 12/11/2026.
+
+| Frente | Líder | Integrantes |
+| --- | --- | --- |
+| Requisitos, Gestão e BI | Hugo Diniz | Victor Santos, Hugo Diniz e Isabelle Rodrigues |
+| Front-end e UX | Jason Araujo | Luiza, Victor Santos e Jason Araujo |
+| Back-end | Diego Souza | Diego Souza e Sophia |
+| IA e Visão Computacional | Gustavo Sousa | Isabelle Rodrigues, Gustavo Sousa e Micaelle Susy |
+
+Liderança de frente não define automaticamente o executor de cada subtarefa. Distribuição individual e prazos serão combinados pelas equipes. Contas GitHub dos demais integrantes ainda não foram verificadas para atribuição no campo Assignees.
