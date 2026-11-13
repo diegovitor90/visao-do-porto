@@ -1,6 +1,8 @@
 
 package br.com.visaodoporto.backend.controller;
 
+import jakarta.validation.Valid;
+
 import java.util.List;
 import java.util.UUID;
 
@@ -31,7 +33,7 @@ public class TrabalhadorController {
     @PostMapping
     @ResponseStatus(HttpStatus.CREATED)
     public Trabalhador cadastrar(
-            @RequestBody TrabalhadorRequest request) {
+            @Valid @RequestBody TrabalhadorRequest request) {
         try {
             return service.cadastrar(
                 request.nome(),
