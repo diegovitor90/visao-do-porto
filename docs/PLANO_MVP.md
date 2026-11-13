@@ -1,98 +1,156 @@
-# Visão do Porto: plano do MVP
+# Visão do Porto — Plano de Ação do MVP
 
-Revisão 2, 12/11/2026. Planejamento corrigido a partir do documento de requisitos v1.0 (26/10) e da ata de 28/10. Código do protótipo ainda precisa ser disponibilizado; todas as entregas técnicas abaixo estão abertas.
+**Revisão:** 12/11/2026  
+**Estado:** Proposta de planejamento técnico, sujeita a alinhamento e aprovação coletiva.  
+**Fontes de referência:** Documento de Requisitos de Software v1.0 (26/10/2026, 11 páginas); Ata VC UNDB (28/10/2026) e complemento de arquitetura; revisão de rastreabilidade de 12/11/2026.  
+**Documento complementar:** `RASTREABILIDADE_REQUISITOS.md`.
 
-## Escopo e evolução registrada
+> Este plano organiza entregas previstas; não comprova implementação, aceite coletivo ou validação em ambiente portuário. Os números #2–#8 são identificadores usados no planejamento e devem ser conferidos com as Issues reais do GitHub.
 
-O núcleo do MVP inclui câmera, pessoas, capacete e colete, associação pessoa–EPI, zonas configuráveis, regras, persistência temporal, alertas com evidência, revisão e histórico. O plano anterior colocou EPIs para depois indevidamente; esta revisão corrige essa omissão.
+## 1. Objetivo e recorte do MVP
 
-A ata tratava identificação/autorização/treinamento como ampliação a deliberar. Em 12/11, Diego solicitou o diferencial ByteTrack + vínculo cadastral + treinamento. Essa evolução entra no piloto com dados fictícios e confirmação manual, sem atribuir à ata uma decisão que ela não registrou. Não houve validação coletiva documentada dessas novas escolhas.
+Demonstrar, em **laboratório da UNDB**, um fluxo de segurança assistida por visão computacional que detecta pessoas e EPIs básicos (capacete e colete), acompanha trajetórias, interpreta zonas configuradas, aplica regras e produz alertas com evidências revisáveis.
 
-O primeiro piloto será em uma câmera fixa no laboratório, uma zona e regras de exemplo explicitamente identificadas. Treinamento válido é um requisito possível, não sinônimo de autorização. ByteTrack mantém trajetórias, não comprova identidade civil. O piloto apoia revisão humana e não controla máquinas ou libera acesso físico automaticamente.
+**Núcleo do MVP:** captura de uma câmera física; simulação de múltiplas fontes; detecção e rastreamento de pessoas; capacete e colete; associação pessoa–EPI; editor de polígonos; contexto e EPIs exigidos por zona; persistência temporal, deduplicação, oclusão/indeterminação; alertas, evidências, explicação, revisão e histórico.
 
-## Entregas e dependências
+**Suporte administrativo limitado:** cadastro fictício de trabalhadores, capacitações e vínculo manual com eventos, sem pressupor identificação biométrica ou automática de pessoas.
 
-| Ordem | Entrega | Frente de referência |
+**Fora do MVP:** EPIs especializados; reconhecimento automático de cena; reconhecimento facial/Face ID; implantação física multicâmera; integrações institucionais com SharePoint/Power BI/CCO; BI agregado completo; processamento em borda; validação operacional no porto. QR/RFID e outras formas de identificação permanecem propostas futuras, não requisitos implementados no piloto.
+
+## 2. Arquitetura e fronteiras
+
+- **Spring Boot (Java):** API administrativa, cadastros, capacitações, regras de autorização, histórico, auditoria e integração.
+- **FastAPI (Python):** serviços de inferência e eventos de visão computacional; detecção e rastreamento são distintos de identificação pessoal.
+- **Frontend:** configuração de zonas, acompanhamento de alertas, revisão humana e consulta ao histórico.
+- **Persistência:** H2 apenas no desenvolvimento inicial; PostgreSQL é evolução proposta, com migrações e contratos a definir.
+- **Identidade:** credencial/cadastro fornece identidade administrativa; trajetória visual não identifica automaticamente um trabalhador. Vínculos no piloto serão manuais e com dados fictícios.
+- **Governança:** autenticação, perfis, finalidade, retenção, descarte, versionamento de regras e trilha de auditoria devem ser definidos antes do aceite.
+
+**Contrato mínimo a especificar em #2 e validar na integração:** `event_id`, `camera_id`, `zone_id`, `timestamp`, `event_type`, `track_id` (efêmero), `rule_id`, `rule_version`, `confidence` (quando aplicável), `evidence_ref`, `review_status`. Campos, tipos, valores e responsabilidades são **proposta**, não contrato aprovado. Evitar colocar identidade pessoal diretamente no evento de inferência.
+
+## 3. Equipes
+
+| Frente | Liderança informada | Integrantes informados |
 | --- | --- | --- |
-| 1 | [fechar regras, governança e critérios de aceite ](https://github.com/diegovitor90/visao-do-porto/issues/2) | Hugo lidera Requisitos, Gestão e BI, com Victor Santos e Isabelle Rodrigues; validação operacional a confirmar. |
-| 2 | [conectar câmera e detectar pessoas com ByteTrack ](https://github.com/diegovitor90/visao-do-porto/issues/3) | Gustavo lidera IA, com Isabelle e Micaelle; Diego/Sophia na integração; Jason/Luiza/Victor no painel. |
-| 3 | [detectar capacete/colete e associar EPI à pessoa ](https://github.com/diegovitor90/visao-do-porto/issues/4) | Gustavo lidera IA, com Isabelle e Micaelle; back-end recebe observações; front-end exibe estados. |
-| 4 | [editar zonas e aplicar regras com persistência temporal ](https://github.com/diegovitor90/visao-do-porto/issues/5) | Jason: editor; Diego: regras e eventos; Hugo: fontes. |
-| 5 | [vincular trajetória ao cadastro e consultar treinamentos ](https://github.com/diegovitor90/visao-do-porto/issues/6) | Diego: cadastro/regras; Jason: confirmação visual; Hugo: registros fictícios. |
-| 6 | [painel, evidências, revisão e histórico de alertas ](https://github.com/diegovitor90/visao-do-porto/issues/7) | Jason: interface; Diego: API/persistência; Hugo: critérios de revisão. |
-| 7 | [preparar dados e executar teste integrado no laboratório ](https://github.com/diegovitor90/visao-do-porto/issues/8) | Gustavo lidera IA e avaliação técnica, com Isabelle e Micaelle; todas as frentes participam; Hugo coordena os critérios. |
+| Requisitos, Gestão e BI | Hugo Diniz | Victor Santos, Hugo Diniz, Isabelle Rodrigues |
+| Front-end e UX | Jason Araujo | Luiza, Victor Santos, Jason Araujo |
+| Back-end | Diego Souza | Diego Souza, Sophia |
+| IA e Visão Computacional | Gustavo Sousa | Isabelle Rodrigues, Gustavo Sousa, Micaelle Susy |
 
-A tarefa [#1](https://github.com/diegovitor90/visao-do-porto/issues/1) acompanha o conjunto. Governança e plano de avaliação começam junto com câmera/rastreamento. EPIs e editor de zonas podem avançar em paralelo com contrato comum. Vínculo de treinamento depende da trajetória e das regras; integração final depende de todas as frentes. Gustavo Sousa lidera IA; executores de subtarefas e prazos permanecem a combinar.
+Liderança não implica atribuição automática de cada subtarefa. Responsáveis individuais, datas e contas GitHub para `Assignees` ainda precisam ser confirmados.
 
-## Arquitetura e contratos mínimos
+## 4. Entregas por tarefa
 
-Captura -> detecção de pessoas/EPIs -> ByteTrack e associação pessoa–EPI -> zona/contexto cadastrado -> regras e persistência -> evento -> painel/revisão/histórico.
+### #2 — Escopo, contratos, critérios de aceite e governança
 
-O cadastro e o vínculo manual alimentam a consulta de treinamento quando exigida pela zona, sem impedir a observação anônima de EPIs.
+**Frente principal:** Requisitos/Gestão, com líderes técnicos.  
+**Situação:** Pendente de alinhamento coletivo.
 
-- IA para back-end: camera_id, session_id, timestamp, frame_id, track_id, bbox, classe/confiança, EPIs associados/confiança e qualidade da observação.
-- Regras: zone_id, geometria e resolução de referência, contexto, atividade, condição ativa, EPIs/treinamentos exigidos, origem, item, versão e validação.
-- Vínculo: worker_id fictício separado da chave camera_id + session_id + track_id, operador confirmador, horário e estado da associação.
-- Evento para painel: event_id, início/fim, zona, câmera, tipo, regra/versão, motivo, evidência, revisão e autor/data da revisão.
-- Estados separados: EPI detectado/possível ausência/indeterminado; identidade confirmada/não confirmada; treinamento válido/vencido/ausente/não verificado; permissão conforme regra.
+- [ ] Validar o recorte do MVP, o ambiente do laboratório e as exclusões.
+- [ ] Confirmar regras de segurança, critérios de zonas e requisitos de EPI com especialista operacional; não presumir procedimentos do Porto do Itaqui.
+- [ ] Especificar contratos IA ↔ backend ↔ frontend, versões, tratamento de erros e indeterminação.
+- [ ] Definir metas de FPS, latência, precisão/recall, falsos alarmes e critérios de aceite antes dos testes.
+- [ ] Definir perfis, autenticação, retenção, finalidade, descarte e auditoria.
+- [ ] Atribuir executores, prazos, frequência das reuniões e registro de impedimentos.
 
-Não transformar confiança de detecção em confiança de identidade. Perda/reinício ou dúvida no vínculo exige nova confirmação. Trocas silenciosas de ID precisam ser medidas. Não detectar EPI em uma observação ruim não prova ausência. Falha de câmera deve gerar estado técnico, sem conservar o último resultado como atual.
+**Aceite:** decisões registradas, contratos revisados pelas frentes e critérios mensuráveis publicados.
 
-## Aceite do conjunto
+### #3 — Fontes de vídeo, detecção e rastreamento
 
-- Câmera conectada, timestamps, detecções e IDs visíveis; queda e recuperação demonstradas.
-- Capacete e colete associados à pessoa, incluindo exemplos próximos/ocultos.
-- Zona desenhada na imagem, editável/desativável e recalibrável; contexto cadastrado, sem VLM.
-- Verificação em dois níveis (presença e adequação à zona), evidência insuficiente e persistência configurável.
-- Evento sem duplicação por quadro, com evidência, origem/versionamento da regra e explicação em português.
-- Operador confirma/descarta e consulta histórico por filtros, sob autenticação/perfis.
-- Cadastro fictício vinculado manualmente à trajetória; estados de treinamento e perda do vínculo demonstrados separadamente da permissão.
-- Metas numéricas, dados de referência, condições do teste e resultados documentados; avaliar também ocorrências não alertadas.
+**Frente principal:** IA/VC.  
+**Situação:** Planejado; a existência da estrutura FastAPI não comprova pipeline funcional.
 
-Critérios detalhados estão nas tarefas. Não marcar o MVP concluído só porque os documentos ou telas existem.
+- [ ] Integrar uma câmera física no laboratório e fontes simuladas independentes.
+- [ ] Detectar pessoas e produzir `track_id` temporal, sem equipará-lo a identidade pessoal.
+- [ ] Medir FPS, latência, falhas de fonte, reconexão e isolamento.
+- [ ] Documentar condições de iluminação, oclusão e limitações do hardware.
 
-## Ciclo de desenvolvimento e avaliação
+**Aceite:** demonstração reproduzível e medições com configuração/hardware registrados.
 
-Seguir o guia Ultralytics como orientação: objetivos, dados, preparação, solução inicial, avaliação, teste, implantação e acompanhamento. Começar com modelos pré-treinados; ajustar/treinar somente se a avaliação justificar. O treinamento profissional do trabalhador vem de registros verificados e não do modelo visual.
+### #4 — EPIs básicos e associação pessoa–EPI
 
-Gravar sequências autorizadas e anotar pessoas, EPIs, trajetórias e eventos. Separar sessões inteiras para ajuste e teste, evitando quadros vizinhos em conjuntos diferentes. Se houver treino, dividir antes do aumento de dados. Não usar o teste reservado para ajustar parâmetros.
+**Frente principal:** IA/VC.  
+**Situação:** Planejado.
 
-Medir precisão/recall por classe e evento, falsos alarmes por período, eventos perdidos, trocas de ID, erros de associação EPI/pessoa e cadastro/trajetória, FPS e latência incluindo p95. Explicitar denominadores, hardware, versões e parâmetros. Metas numéricas devem ser acordadas após a medição inicial e antes do aceite. Avaliação em laboratório não comprova desempenho portuário.
+- [ ] Detectar capacete e colete.
+- [ ] Associar EPIs a pessoas com regra de proximidade e limites de confiança.
+- [ ] Tratar ausência, incerteza e oclusão sem gerar conclusão indevida.
+- [ ] Medir precisão/recall e erros de associação em conjunto de teste documentado.
 
-## Governança e segurança dos dados
+**Aceite:** cenários positivos, negativos e indeterminados demonstrados com métricas e evidências.
 
-Definir fontes/versões das regras, matriz de permissões, retenção, proteção e descarte. Considerar as propostas de Isabelle sobre procedimentos do Itaqui, qualidade da imagem e técnico de segurança, distinguindo sugestão de decisão validada. Conferir as fontes normativas vigentes antes de converter requisitos em obrigações legais.
+### #5 — Zonas, polígonos e motor de regras
 
-Cadastros do piloto são fictícios. Não versionar senhas RTSP, imagens identificáveis, documentos ou certificados reais no Git. Verificar licenças de código, modelos e datasets antes da incorporação.
+**Frentes:** IA/VC, backend e frontend.  
+**Situação:** Planejado.
 
-## Fora deste incremento
+- [ ] Editor visual de polígonos por câmera; contexto de zona cadastrado manualmente.
+- [ ] Cadastro/editabilidade dos EPIs exigidos e regras por zona, com origem e versão.
+- [ ] Verificação de presença/intrusão e adequação de EPI por pessoa/zona.
+- [ ] Persistência temporal, deduplicação de eventos e tratamento de oclusão/indeterminação.
+- [ ] Definir recalibração de polígonos após alteração de câmera.
 
-EPIs especializados, VLM, reconhecimento facial, leitura automatizada de QR, reidentificação entre câmeras, integração real com bases institucionais, relatórios agregados RF22, contêineres, quedas e execução em borda RNF19. Escala física multicâmera e avaliação em condições portuárias são evoluções; testar isolamento de falha com fontes simuladas no piloto.
+**Aceite:** cenários controlados com rastreabilidade da regra acionada e eventos sem duplicação indevida.
 
-## Organização e encaminhamentos
+### #6 — Cadastro, capacitações e vínculo manual
 
-Estrutura sugerida: src/vision, src/registry, src/rules, src/api, configs, tests e docs. Adaptar ao código existente quando disponibilizado. Líderes: Jason no front-end, Diego no back-end, Hugo em Requisitos/Gestão/BI e Gustavo em IA. Composição das equipes registrada abaixo.
+**Frente:** Backend (Diego e Sophia; divisão individual a combinar).  
+**Situação:** **Parcialmente implementado** na branch `feature/backend-diego`.
 
-Entregas de 30/10 e verificação da atividade VLI foram informadas como concluídas por Diego. Compartilhamento das visitas, nova visita, frequência das reuniões, sigla LDL e disponibilidade de bases permanecem a confirmar. O prazo 11/11 é histórico; novo prazo de demonstração deve ser combinado sem presumir conclusão. Manter escrita dos artigos em paralelo.
+**Já demonstrado em desenvolvimento:** entidade e repositório de trabalhador; cadastro, listagem e consulta; rejeição de matrícula duplicada; testes automatizados passando; commit `a6e22c4`. Isso **não** comprova integração à `main` nem conclusão de RF13.
 
-## Referências e rastreabilidade
+- [x] Cadastro básico de trabalhadores fictícios com JPA/H2.
+- [x] Endpoints iniciais de cadastro, listagem e consulta.
+- [x] Regra inicial de matrícula única e testes de serviço.
+- [ ] Revisar o Pull Request/merge e resolver arquivo `TrabalhadorService.java` não rastreado em `repository`.
+- [ ] Especificar e implementar capacitações, validade e vínculo trabalhador–capacitação.
+- [ ] Definir requisitos de treinamento por atividade/zona, com decisões registradas.
+- [ ] Implementar vínculo **manual e auditável** entre cadastro fictício e evento, sem inferir identidade pela trajetória.
+- [ ] Adicionar validações, testes, documentação de API e tratamento de erros consistente.
 
-- [Matriz completa: RF01–RF22, RNF01–RNF19 e ata](RASTREABILIDADE.md).
-- Documento de Requisitos Sistema de Visão Computacional para Segurança Portuária, v1.0, 26/10/2026, fornecido por Diego.
-- Ata_VC_UNDB_28-10-2026(1).docx, fornecida por Diego, incluindo complemento de arquitetura.
-- https://docs.ultralytics.com/pt/guides/steps-of-a-cv-project/
-- https://github.com/FoundationVision/ByteTrack
-- Arquitetura indicada: https://excalidraw.com/#json=bfOGqeFUAc2f7SfcG8_Iw,YeRc1H65m6-Lo3VBv4mUnQ
+**Aceite:** cenários de capacitação válida, vencida, ausente e vínculo manual revisável; sem alegar reconhecimento pessoal automático.
 
-## Equipes e lideranças
+### #7 — Alertas, evidências, revisão e histórico
 
-Composição conforme a planilha de atribuições enviada por Diego; lideranças informadas por ele em 12/11/2026.
+**Frentes:** Backend e frontend, com IA/VC.  
+**Situação:** Planejado.
 
-| Frente | Líder | Integrantes |
-| --- | --- | --- |
-| Requisitos, Gestão e BI | Hugo Diniz | Victor Santos, Hugo Diniz e Isabelle Rodrigues |
-| Front-end e UX | Jason Araujo | Luiza, Victor Santos e Jason Araujo |
-| Back-end | Diego Souza | Diego Souza e Sophia |
-| IA e Visão Computacional | Gustavo Sousa | Isabelle Rodrigues, Gustavo Sousa e Micaelle Susy |
+- [ ] Registrar alertas com regra, versão, zona, câmera, instante e explicação em português.
+- [ ] Vincular evidências de forma controlada, com política de acesso/retenção.
+- [ ] Disponibilizar revisão humana auditável (confirmar, descartar, indeterminado).
+- [ ] Histórico pesquisável com filtros; indicadores de alertas descartados sem chamar isso de taxa de falso positivo validada.
 
-Liderança de frente não define automaticamente o executor de cada subtarefa. Distribuição individual e prazos serão combinados pelas equipes. Contas GitHub dos demais integrantes ainda não foram verificadas para atribuição no campo Assignees.
+**Aceite:** trilha reproduzível do evento à revisão, com filtros e permissões testados.
+
+### #8 — Integração, medição e demonstração
+
+**Frentes:** Todas.  
+**Situação:** Planejado; o prazo histórico de 11/11 não é evidência de piloto realizado.
+
+- [ ] Integrar câmera → IA/VC → backend → frontend → revisão.
+- [ ] Executar cenários de teste e registrar dados, versões, hardware e limitações.
+- [ ] Medir FPS, latência, precisão/recall, erros de associação, alertas e falhas/reconexão.
+- [ ] Separar resultados laboratoriais de qualquer alegação de validação portuária.
+- [ ] Apresentar demonstração no laboratório da UNDB com critérios de aceite definidos em #2.
+
+**Aceite:** roteiro demonstrável, relatório de métricas reprodutíveis e pendências explícitas.
+
+## 5. Ordem e dependências
+
+1. **Agora:** resolver pendências locais da entrega de trabalhadores; conferir merge/PR e atualizar o status real da branch.
+2. **Antes de integrar:** fechar #2 (contratos, regras, aceite, responsáveis e cronograma).
+3. **Em paralelo:** #3 e #4 pela IA/VC; capacitações da #6 pelo backend; desenho de UX de zonas/alertas pelo frontend.
+4. **Integração incremental:** #5 → #7 → #8, sem bloquear testes isolados anteriores.
+5. **Depois do piloto:** revisar expansão física, integrações institucionais, BI completo e identificação autorizada.
+
+## 6. Gestão da execução no GitHub
+
+Cada Issue deve indicar: objetivo, RF/RNF relacionados, responsável confirmado, dependências, checklist, critérios de aceite, branch/PR, evidências e estado (`Planejado`, `Em andamento`, `Em revisão`, `Validado`, `Adiado`). Uma tarefa só passa a `Validado` quando os critérios e evidências forem revisados. Usar Pull Requests para integração à `main`, conforme fluxo aprovado pela equipe.
+
+**Pendências de coordenação:** confirmar composição/atribuições, prazos e reuniões; obter avaliação operacional de regras Itaqui e qualidade de imagem; confirmar registros de visita e material compartilhado por Hugo; verificar eventuais compromissos históricos sem convertê-los em implementação comprovada. Artigos acadêmicos podem seguir em paralelo, com resultados apenas após medição.
+
+## 7. Histórico de revisão
+
+- **26/10/2026:** Documento de Requisitos v1.0 (fonte histórica).
+- **28/10/2026:** Ata VC UNDB e complemento de arquitetura (fonte histórica).
+- **12/11/2026:** revisão proposta de plano, com foco em pessoas/EPI/zonas/alertas e suporte administrativo limitado; **não representa aprovação coletiva**.
