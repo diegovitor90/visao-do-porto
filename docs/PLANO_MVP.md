@@ -3,7 +3,7 @@
 **Revisão:** 12/11/2026  
 **Estado:** Proposta de planejamento técnico, sujeita a alinhamento e aprovação coletiva.  
 **Fontes de referência:** Documento de Requisitos de Software v1.0 (26/10/2026, 11 páginas); Ata VC UNDB (28/10/2026) e complemento de arquitetura; revisão de rastreabilidade de 12/11/2026.  
-**Documento complementar:** `RASTREABILIDADE_REQUISITOS.md`.
+**Documento complementar:** `RASTREABILIDADE.md`.
 
 > Este plano organiza entregas previstas; não comprova implementação, aceite coletivo ou validação em ambiente portuário. Os números #2–#8 são identificadores usados no planejamento e devem ser conferidos com as Issues reais do GitHub.
 
@@ -154,3 +154,9 @@ Cada Issue deve indicar: objetivo, RF/RNF relacionados, responsável confirmado,
 - **26/10/2026:** Documento de Requisitos v1.0 (fonte histórica).
 - **28/10/2026:** Ata VC UNDB e complemento de arquitetura (fonte histórica).
 - **12/11/2026:** revisão proposta de plano, com foco em pessoas/EPI/zonas/alertas e suporte administrativo limitado; **não representa aprovação coletiva**.
+
+## Atualização de implementação: 13/11/2026
+
+O commit `a6e22c4` está na história da `main`, conferida no commit `8ea0b68`. O serviço de trabalhadores importado pelo controller estava ausente nas duas branches; esta entrega o completa. Na branch de revisão, o incremento da tarefa #6 implementa cadastro/listagem/consulta de capacitações fictícias, validade por data e estados distintos. Veja [CAPACITACOES.md](CAPACITACOES.md).
+
+O cadastro visual, vínculo manual com trajetória, requisitos por zona, autenticação e integração com IA continuam pendentes. O [contrato de observação](contrato-ia-backend.md) é um rascunho; não representa endpoint implementado ou aprovação coletiva. Os checklists anteriores registram o estágio de 12/11 e não devem ser usados como evidência de aceite deste incremento.

@@ -3,7 +3,7 @@
 **Revisão:** 12/11/2026  
 **Natureza:** planejamento e mapeamento de cobertura; não é atestado de implementação ou aceite.  
 **Fontes informadas:** Documento de Requisitos de Software v1.0 (26/10/2026, 11 páginas); Ata VC UNDB (28/10/2026), inclusive complemento de arquitetura; revisão de rastreabilidade de 12/11/2026.  
-**Documento operacional:** `PLANO_DE_ACAO.md`.
+**Documento operacional:** `PLANO_MVP.md`.
 
 > Os originais não são alterados por este documento. As descrições abaixo sintetizam o recorte informado na revisão, sem reproduzir integralmente a redação dos requisitos. Os identificadores #2–#8 devem ser conferidos com as Issues publicadas.
 
@@ -133,3 +133,11 @@ Não substituir métricas independentes por quantidade de alertas descartados em
 - **26/10/2026:** Documento de Requisitos v1.0 — referência histórica.
 - **28/10/2026:** Ata VC UNDB e complemento — referência histórica.
 - **12/11/2026:** revisão de rastreabilidade e proposta de arquitetura/execução, sem alterar fontes originais nem registrar aprovação coletiva.
+
+## Incremento em revisão: 13/11/2026
+
+- Conferida a presença de `a6e22c4` na história da `main` (`8ea0b68`).
+- Completado `TrabalhadorService.java`, ausente nas branches remotas consultadas. O estado de arquivos locais no computador de Diego não foi inspecionado.
+- #6: implementados registros fictícios de capacitação e consulta de validade no Spring Boot/H2, com testes de serviço e API. [Detalhes e reprodução](CAPACITACOES.md).
+- RF13 permanece parcial: não há vínculo com trajetória, identificação automática ou decisão de acesso. RNF12–RNF14 permanecem pendentes: o verificador é um rótulo de demonstração, sem autenticação.
+- [Contrato IA/back-end](contrato-ia-backend.md) proposto; pipeline e integração não entregues neste incremento.

@@ -2,7 +2,7 @@
 
 **Plataforma de apoio à segurança portuária com visão computacional, regras por zona e registro auditável de eventos.**
 
-> **Estado do projeto — 12/11/2026:** desenvolvimento de MVP acadêmico, com demonstração planejada em laboratório da UNDB. A API administrativa inicial em Spring Boot possui funcionalidades implementadas e testadas. A solução integrada de visão computacional, regras, alertas e interface ainda está em desenvolvimento. **Não há validação operacional em ambiente portuário.**
+> **Estado desta branch — 13/11/2026:** incremento administrativo em revisão, com cadastro de trabalhadores e capacitações testados. A `main` conferida em `8ea0b68` continha os controllers e testes de trabalhadores, mas não o arquivo `TrabalhadorService.java` necessário para compilar. Esta branch completa o serviço ausente. A solução integrada de visão computacional, regras, alertas e interface ainda está em desenvolvimento. **Não há validação operacional em ambiente portuário.**
 
 ## Sobre o projeto
 
@@ -64,7 +64,7 @@ A comunicação entre serviços e o contrato de eventos precisam ser especificad
 
 ## Estado das entregas
 
-| Componente | Estado em 12/11/2026 |
+| Componente | Estado nesta branch, em 13/11/2026 |
 | --- | --- |
 | Estrutura inicial Spring Boot e FastAPI | Criada no repositório |
 | Endpoint de saúde do Spring Boot | Implementado e testado manualmente |
@@ -72,13 +72,22 @@ A comunicação entre serviços e o contrato de eventos precisam ser especificad
 | Listagem e consulta de trabalhadores | Implementadas e testadas manualmente |
 | Validação de matrícula duplicada | Implementada e testada |
 | Testes automatizados do serviço | Executados com sucesso |
-| Capacitações e verificação de validade | Pendentes |
+| Capacitações e verificação de validade | Implementadas e testadas nesta branch; integração à main depende do PR |
 | Pipeline de detecção/rastreamento de vídeo | Planejado; implementação integrada não comprovada aqui |
 | EPIs, zonas, regras e alertas | Planejados |
 | Frontend e integração entre serviços | Planejados |
 | Validação no porto | Não realizada |
 
-A primeira entrega de backend está registrada no commit [`a6e22c4`](https://github.com/diegovitor90/visao-do-porto/commit/a6e22c4), na branch `feature/backend-diego`. **A integração à `main` deve ser confirmada no GitHub**; não é presumida neste documento.
+A primeira entrega de backend está registrada no commit [`a6e22c4`](https://github.com/diegovitor90/visao-do-porto/commit/a6e22c4), na branch `feature/backend-diego`. A presença desse commit na história da `main` foi confirmada em 13/11/2026. O arquivo `TrabalhadorService.java`, porém, estava ausente no repositório e é completado nesta entrega.
+
+## Incremento de capacitações (13/11/2026)
+
+Implementado nesta branch para revisão: cadastro de capacitações fictícias, listagem por trabalhador e consulta de validade. A consulta diferencia `VALIDA`, `VENCIDA`, `AUSENTE` e `NAO_VERIFICADA`, sem conceder autorização de acesso. Inclui testes e roteiro HTTP com quatro cenários.
+
+- [Executar e entender a API de capacitações](docs/CAPACITACOES.md).
+- [Contrato proposto de integração com IA](docs/contrato-ia-backend.md).
+
+O vínculo com ByteTrack, zonas, alertas e integração visual continuam pendentes. O módulo está em revisão e ainda não foi incorporado à `main`.
 
 ## Executando o backend Spring Boot localmente
 
@@ -122,6 +131,11 @@ Endpoints administrativos disponíveis nesta etapa:
 | `POST` | `/api/trabalhadores` | Cadastrar trabalhador |
 | `GET` | `/api/trabalhadores` | Listar trabalhadores |
 | `GET` | `/api/trabalhadores/{id}` | Consultar por UUID |
+| `POST` | `/api/trabalhadores/{id}/capacitacoes` | Registrar capacitação fictícia |
+| `GET` | `/api/trabalhadores/{id}/capacitacoes` | Listar capacitações do trabalhador |
+| `GET` | `/api/trabalhadores/{id}/capacitacoes/{codigo}/situacao` | Consultar validade atual, sem decidir acesso |
+
+**Validação desta entrega:** 20 testes Maven aprovados e quatro cenários conferidos contra a API HTTP iniciada. [Registro da validação](docs/TESTES_CAPACITACOES.md).
 
 **Observações:** o H2 em memória não é persistência definitiva; registros podem desaparecer ao reiniciar a aplicação. O serviço FastAPI tem estrutura inicial, mas seu comando de inicialização e endpoints devem ser documentados após validação específica.
 
@@ -138,10 +152,10 @@ As lideranças não implicam atribuição automática de cada subtarefa. Respons
 
 ## Planejamento e rastreabilidade
 
-- [Plano de Ação](docs/PLANO_DE_ACAO.md) — escopo, dependências, entregas, critérios de aceite e organização do trabalho.
-- [Rastreabilidade de Requisitos](docs/RASTREABILIDADE_REQUISITOS.md) — RF01–RF22, RNF01–RNF19, decisões e evidências de validação.
+- [Plano de Ação](docs/PLANO_MVP.md) — escopo, dependências, entregas, critérios de aceite e organização do trabalho.
+- [Rastreabilidade de Requisitos](docs/RASTREABILIDADE.md) — RF01–RF22, RNF01–RNF19, decisões e evidências de validação.
 
-**Atenção:** os links acima pressupõem que os dois documentos sejam adicionados à pasta `docs/` do repositório. Se estiverem em outro local, ajuste os caminhos.
+Os documentos acima estão na pasta `docs/`.
 
 O planejamento utiliza as referências de tarefas **#2–#8**, que precisam ser conferidas com as Issues reais do GitHub. Uma tarefa planejada não equivale a uma funcionalidade implementada ou aprovada.
 
