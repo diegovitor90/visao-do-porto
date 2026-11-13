@@ -220,3 +220,18 @@ __marimo__/
 .streamlit/secrets.toml
 
 .vscode/
+
+# ========================================
+# Visão do Porto — FastAPI e YOLO
+# ========================================
+
+# Ambiente virtual e arquivos temporários
+backend/fastapi/.venv/
+backend/fastapi/__pycache__/
+backend/fastapi/.pytest_cache/
+
+# Pesos dos modelos de IA
+backend/fastapi/*.pt
+
+# Imagem local de teste
+backend/fastapi/teste_pessoas.png
