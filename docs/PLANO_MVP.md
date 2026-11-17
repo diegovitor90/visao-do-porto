@@ -1,5 +1,35 @@
 # Visão do Porto — Plano de Ação do MVP
 
+
+## Situação técnica consolidada — 17/11/2026
+
+Entrega prevista: **18/11/2026**. O responsável autorizou centralizar o código e a
+documentação na `main`, preservando branches e trabalho local. As seções datadas de
+12 e 13/11 abaixo são registros históricos; os checklists nelas não representam o
+estado completo atual nem aceite de funcionalidades futuras.
+
+| Componente | Implementado e evidência | Ainda pendente |
+| --- | --- | --- |
+| Spring Boot 4.1.2 | Trabalhadores, capacitações e validade; 20 testes no diagnóstico | Integração HTTP com IA; autenticação; vínculo com detecção |
+| FastAPI v0.3.0 | Upload validado, inferência YOLO11n em CPU e JSON tipado; 17 testes no diagnóstico | Rastreamento, EPIs, regras e avaliação ampla |
+| Frontend 0.1.1 | Painel demonstrativo, upload, caixas, filtros e revisão local; build e 9 testes no diagnóstico | Persistência administrativa e integração via Spring |
+
+Fluxo atual: frontend → proxy Vite → FastAPI → YOLO11n. Spring Boot continua como
+API administrativa separada. Fluxo-alvo pendente: frontend → Spring Boot → FastAPI
+→ YOLO11n → Spring Boot → frontend. Consolidar repositório não conclui a integração.
+
+EPIs, zonas operacionais, ByteTrack, vínculo de identidade, alertas reais,
+autorização de acesso e validação portuária permanecem planejados. Mapas e alertas
+do frontend são dados de demonstração. A consulta administrativa continua com
+`autorizacaoAcesso=NAO_AVALIADA`.
+
+Ver [contrato real e proposta futura](contrato-ia-backend.md),
+[capacitações](CAPACITACOES.md), [evidência de inferência real](../backend/fastapi/VALIDACAO_INFERENCIA_REAL_2026-11-17.md)
+e [validação desta consolidação](VALIDACAO_CONSOLIDACAO_2026-11-17.md).
+
+
+## Registro histórico de planejamento
+
 **Revisão:** 12/11/2026  
 **Estado:** Proposta de planejamento técnico, sujeita a alinhamento e aprovação coletiva.  
 **Fontes de referência:** Documento de Requisitos de Software v1.0 (26/10/2026, 11 páginas); Ata VC UNDB (28/10/2026) e complemento de arquitetura; revisão de rastreabilidade de 12/11/2026.  
@@ -137,7 +167,7 @@ Liderança não implica atribuição automática de cada subtarefa. Responsávei
 
 ## 5. Ordem e dependências
 
-1. **Agora:** resolver pendências locais da entrega de trabalhadores; conferir merge/PR e atualizar o status real da branch.
+1. **Registro de 12/11:** resolver pendências da entrega de trabalhadores. Essa etapa foi atendida pelo incremento administrativo; a próxima etapa atual é integrar Spring Boot e FastAPI.
 2. **Antes de integrar:** fechar #2 (contratos, regras, aceite, responsáveis e cronograma).
 3. **Em paralelo:** #3 e #4 pela IA/VC; capacitações da #6 pelo backend; desenho de UX de zonas/alertas pelo frontend.
 4. **Integração incremental:** #5 → #7 → #8, sem bloquear testes isolados anteriores.
@@ -145,7 +175,7 @@ Liderança não implica atribuição automática de cada subtarefa. Responsávei
 
 ## 6. Gestão da execução no GitHub
 
-Cada Issue deve indicar: objetivo, RF/RNF relacionados, responsável confirmado, dependências, checklist, critérios de aceite, branch/PR, evidências e estado (`Planejado`, `Em andamento`, `Em revisão`, `Validado`, `Adiado`). Uma tarefa só passa a `Validado` quando os critérios e evidências forem revisados. Usar Pull Requests para integração à `main`, conforme fluxo aprovado pela equipe.
+Cada Issue deve indicar: objetivo, RF/RNF relacionados, responsável confirmado, dependências, checklist, critérios de aceite, branch/PR, evidências e estado (`Planejado`, `Em andamento`, `Em revisão`, `Validado`, `Adiado`). Uma tarefa só passa a `Validado` quando os critérios e evidências forem revisados. O fluxo histórico previa Pull Requests. Em 17/11, o responsável autorizou consolidação direta na `main`, com preservação, testes e push normal; regras do remoto continuam aplicáveis.
 
 **Pendências de coordenação:** confirmar composição/atribuições, prazos e reuniões; obter avaliação operacional de regras Itaqui e qualidade de imagem; confirmar registros de visita e material compartilhado por Hugo; verificar eventuais compromissos históricos sem convertê-los em implementação comprovada. Artigos acadêmicos podem seguir em paralelo, com resultados apenas após medição.
 

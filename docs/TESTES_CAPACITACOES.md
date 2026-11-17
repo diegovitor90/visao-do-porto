@@ -34,3 +34,18 @@ As quatro respostas mantiveram `autorizacaoAcesso=NAO_AVALIADA`. Cada execução
 ## Limites da evidência
 
 Não foram testados vídeo, ByteTrack, vínculo cadastro-trajetória, geometria de zonas, EPIs, alertas, autenticação, front-end ou desempenho portuário. A tarefa #6 permanece parcial. Estes resultados sustentam somente o incremento administrativo descrito em [CAPACITACOES.md](CAPACITACOES.md).
+
+
+## Revalidação local e consolidação — 17/11/2026
+
+As seções anteriores preservam a evidência de 13/11 no Linux/JDK 21. Em 17/11,
+o diagnóstico no Windows confirmou os 20 testes, com JDK 26 e alvo de compilação
+21. A execução usa `.\mvnw.cmd -o test`, sem instalação de dependências ou `clean`.
+Foram observados avisos de anexação dinâmica do agente Mockito/Byte Buddy; eles
+não invalidaram o build. Não inferir ausência desses avisos apenas pelo arquivo
+`mock-maker-proxy` existente.
+
+O resultado da nova execução após os ajustes documentais, seus limites e a relação
+com Python/frontend estão registrados em
+[VALIDACAO_CONSOLIDACAO_2026-11-17.md](VALIDACAO_CONSOLIDACAO_2026-11-17.md).
+A comunicação Spring Boot–FastAPI continua pendente.

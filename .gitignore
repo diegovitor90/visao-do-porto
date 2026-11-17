@@ -220,3 +220,48 @@ __marimo__/
 .streamlit/secrets.toml
 
 .vscode/
+
+
+# Consolidação local — 17/11/2026
+# Dependências, ambientes, builds e relatórios regeneráveis
+**/node_modules/
+**/.venv/
+**/venv/
+**/target/
+**/dist/
+**/build/
+**/playwright-report/
+**/test-results/
+*.tsbuildinfo
+
+# Pesos e fotografia local de validação: preservar fora do versionamento
+*.pt
+/backend/fastapi/teste_pessoas.png
+
+# Backups e temporários: não remover os arquivos locais
+/frontend-backup 0.1/
+*.bak
+*.tmp
+*.temp
+*.orig
+*.rej
+*~
+*.log
+/backend/backend-springboot/erros-maven.txt
+
+# Configuração privada, credenciais e bancos locais
+.env
+.env.*
+!.env.example
+credentials*.json
+secrets*.json
+service-account*.json
+*.pem
+*.key
+*.pfx
+*.p12
+*.jks
+*.keystore
+*.sqlite
+*.sqlite3
+*.db

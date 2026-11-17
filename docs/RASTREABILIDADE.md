@@ -1,5 +1,35 @@
 # Visão do Porto — Rastreabilidade de Requisitos e Decisões
 
+
+## Situação técnica consolidada — 17/11/2026
+
+Entrega prevista: **18/11/2026**. O responsável autorizou centralizar o código e a
+documentação na `main`, preservando branches e trabalho local. As seções datadas de
+12 e 13/11 abaixo são registros históricos; os checklists nelas não representam o
+estado completo atual nem aceite de funcionalidades futuras.
+
+| Componente | Implementado e evidência | Ainda pendente |
+| --- | --- | --- |
+| Spring Boot 4.1.2 | Trabalhadores, capacitações e validade; 20 testes no diagnóstico | Integração HTTP com IA; autenticação; vínculo com detecção |
+| FastAPI v0.3.0 | Upload validado, inferência YOLO11n em CPU e JSON tipado; 17 testes no diagnóstico | Rastreamento, EPIs, regras e avaliação ampla |
+| Frontend 0.1.1 | Painel demonstrativo, upload, caixas, filtros e revisão local; build e 9 testes no diagnóstico | Persistência administrativa e integração via Spring |
+
+Fluxo atual: frontend → proxy Vite → FastAPI → YOLO11n. Spring Boot continua como
+API administrativa separada. Fluxo-alvo pendente: frontend → Spring Boot → FastAPI
+→ YOLO11n → Spring Boot → frontend. Consolidar repositório não conclui a integração.
+
+EPIs, zonas operacionais, ByteTrack, vínculo de identidade, alertas reais,
+autorização de acesso e validação portuária permanecem planejados. Mapas e alertas
+do frontend são dados de demonstração. A consulta administrativa continua com
+`autorizacaoAcesso=NAO_AVALIADA`.
+
+Ver [contrato real e proposta futura](contrato-ia-backend.md),
+[capacitações](CAPACITACOES.md), [evidência de inferência real](../backend/fastapi/VALIDACAO_INFERENCIA_REAL_2026-11-17.md)
+e [validação desta consolidação](VALIDACAO_CONSOLIDACAO_2026-11-17.md).
+
+
+## Registro histórico de planejamento
+
 **Revisão:** 12/11/2026  
 **Natureza:** planejamento e mapeamento de cobertura; não é atestado de implementação ou aceite.  
 **Fontes informadas:** Documento de Requisitos de Software v1.0 (26/10/2026, 11 páginas); Ata VC UNDB (28/10/2026), inclusive complemento de arquitetura; revisão de rastreabilidade de 12/11/2026.  
@@ -113,7 +143,7 @@ Liderança não define automaticamente executor de subtarefa. Distribuição ind
 | Testes Maven relatados como aprovados | Validação automatizada inicial do backend | Aceite do MVP, desempenho de vídeo ou validação portuária |
 | `git push` e branch sincronizada informados | Entrega enviada à branch remota | Merge à `main` confirmado |
 
-**Pendências técnicas imediatas:** conferir estado do merge/PR; verificar arquivo não rastreado `src/main/java/.../repository/TrabalhadorService.java` antes de remover; manter relatório local `erros-maven.txt` fora do versionamento; definir contratos, testes e evidências de cada Issue.
+**Pendências históricas de 12/11:** o serviço foi completado em `src/main/java/br/com/visaodoporto/backend/service/TrabalhadorService.java`, está rastreado e seus testes passam. Não remover arquivos locais. `erros-maven.txt` permanece excluído. A integração Spring–FastAPI e o aceite por requisito continuam pendentes.
 
 ## 8. Matriz de evidência a preencher por requisito
 

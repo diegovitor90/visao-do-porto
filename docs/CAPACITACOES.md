@@ -1,18 +1,18 @@
 # Capacitações: primeira entrega administrativa
 
-13/11/2026. Implementação proposta em `feature/backend-diego`, para revisão por Pull Request. Relacionada à tarefa #6; não encerra o requisito de vínculo com trajetória.
+Implementação originada em 13/11/2026 na `feature/backend-diego`, preservada na consolidação autorizada para a `main` em 17/11/2026. Relacionada à tarefa #6; não encerra o requisito de vínculo com detecção ou trajetória.
 
 ## O que este incremento permite
 
 Cadastrar uma capacitação fictícia de um trabalhador já cadastrado, listar seus registros e consultar a situação atual de um tipo de capacitação. A implementação segue Controller → Service → Repository → Entity no Spring Boot existente. FastAPI continua reservado à visão computacional. H2 continua em memória e os dados são descartados ao encerrar o serviço.
 
-O arquivo `TrabalhadorService.java`, importado pelo controller e pelos testes, estava ausente tanto na `main` quanto na `feature/backend-diego` consultadas. Este incremento completa esse serviço com os métodos já esperados e adiciona validação ao cadastro. Não cria outro cadastro em Python.
+Na inspeção histórica de 13/11, o arquivo `TrabalhadorService.java`, importado pelo controller e pelos testes, estava ausente nas árvores consultadas antes deste incremento. Este incremento completa esse serviço com os métodos já esperados e adiciona validação ao cadastro. Não cria outro cadastro em Python.
 
 ## Executar e demonstrar
 
-Pré-requisitos: JDK 21, Git, acesso ao Maven Central. Python 3.10+ somente para o roteiro de demonstração, sem pacotes extras. No Windows, confira `java -version` e `JAVA_HOME`: ambos devem apontar para JDK 21.
+Pré-requisitos: JDK 21, Git, acesso ao Maven Central. Python 3.10+ somente para o roteiro de demonstração, sem pacotes extras. No Windows, confira `java -version` e `JAVA_HOME`: use um JDK completo. O alvo é Java 21; a validação local de 17/11 usou JDK 26, e o relatório histórico registra JDK 21.
 
-Após obter a branch da entrega, na raiz do repositório:
+Na raiz do repositório consolidado:
 
 ```powershell
 cd backend/backend-springboot
@@ -77,4 +77,4 @@ Trabalhador inexistente retorna 404; corpo/código/datas inválidos retornam 400
 
 Os testes abrangem datas-limite, fuso, vencimento, renovação, ausência, registros não verificados, separação por pessoa/curso, validação HTTP, persistência JPA/H2 durante a execução e preservação do cadastro existente. Evidências da execução ficam na descrição do PR e em `target/surefire-reports/` após rodar Maven.
 
-Próxima integração: definir e implementar sessão/câmera/trajetória, vínculo manual revisável, perda/invalidação do vínculo e requisitos por zona. O contrato proposto está em [contrato-ia-backend.md](contrato-ia-backend.md). Pipeline de vídeo, métricas de IA, alertas, interface, autenticação e validação portuária continuam pendentes. Este incremento não implementa o fluxo completo da demonstração visual.
+Próxima etapa imediata: integrar o upload do Spring Boot à FastAPI v0.3.0 por HTTP multipart, conforme [contrato real e proposta futura](contrato-ia-backend.md). A FastAPI já detecta pessoas em imagens e o frontend 0.1.1 já possui interface demonstrativa, mas ambos continuam separados desta API administrativa. Sessão/câmera/trajetória, vínculo manual, regras por zona, EPIs, alertas reais, autenticação e validação portuária permanecem planejados. Os resultados locais de 17/11 estão na [validação da consolidação](VALIDACAO_CONSOLIDACAO_2026-11-17.md).
