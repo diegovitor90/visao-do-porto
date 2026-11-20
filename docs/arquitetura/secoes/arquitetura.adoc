@@ -1,0 +1,66 @@
+== Arquitetura atual e arquitetura-alvo
+
+=== Contexto atual
+
+O usuário envia imagem pela interface; um cliente administrativo acessa o Spring.
+O sistema não possui integração institucional ou validação em porto comprovada.
+
+.C4 System Context: sistema atual implementado
+image::01-contexto-atual.svg[Contexto atual,width=100%]
+
+=== Containers atuais
+
+O React chama `/api/v1/vision/*`; no desenvolvimento o proxy Vite encaminha para
+a FastAPI. YOLO11n é uma biblioteca/modelo dentro do processo Python, não outro
+serviço HTTP. O Spring mantém trabalhadores e capacitações via JPA/H2, separado
+da análise visual. `demo_visual.py` é uma demonstração local independente.
+
+.C4 Container: estrutura atual; H2 embutido e YOLO no processo
+image::02-containers-atuais.svg[Containers atuais,width=100%]
+
+O proxy Vite existe somente no servidor de desenvolvimento. O build estático
+não configura reverse proxy de produção. Revisões do painel são locais ao
+navegador; alertas e mapa demonstrativos não são eventos do detector.
+
+=== Direção aprovada e componentes candidatos
+
+A captura envia imagens ao processamento Python. O Spring mantém o plano
+administrativo e poderá publicar/fornecer dados a um sincronizador fora do
+caminho crítico de vídeo. Metadados e referências operacionais poderão circular
+conforme contratos futuros; não há aprovação para usar Java como proxy de frames.
+
+.C4 Container: direção aprovada e extensões candidatas, ainda não integradas
+image::03-containers-alvo.svg[Containers alvo,width=100%]
+
+Os módulos candidatos não são decisão de adoção integral nem compromisso de
+deploy de todos os processos. Cada projeto Python externo usa pacote `app`;
+o runner existente usa processos separados e HTTP para evitar colisões de import.
+Não incorporar esses pacotes indiscriminadamente no processo da FastAPI atual.
+
+=== Matriz de responsabilidades
+
+[cols="2,2,3",options="header"]
+|===
+|Informação |Fonte atual |Direção / decisão em aberto
+|Cadastro administrativo |Spring: Trabalhador |Spring é oficial; Identity pode receber cópia operacional.
+|Capacitações e validade |Spring: Capacitacao |Preservar. Catálogo e certificações são evolução futura.
+|Detecção de pessoas |FastAPI + YOLO11n |Preservar API v0.3.0 e detector atual.
+|EPIs e associação visual |Sophia: PPE, candidato |Validar pesos, classes, limites e adaptação; não comprovado no grupo.
+|Identificador operacional |Sophia: Identity, candidato |UUID interno e employee_code são distintos do UUID Java e matrícula.
+|Câmeras e setores |Sophia: Tracker, candidato |Avaliar como cadastro operacional antes de criar outro CRUD.
+|Zonas poligonais |Não implementadas na base principal |Dono, coordenadas, versões e cardinalidades pendentes.
+|Estado consolidado |Sophia: Fusion, candidato |Estado operacional; não cadastro administrativo.
+|Conformidade |Sophia: Rules e Compliance, candidatos |Definir papel de cada motor; evitar decisões concorrentes.
+|Incidentes e evidências |Sophia: Incident / evidências parciais |Persistência e fonte oficial de histórico ainda pendentes.
+|Alertas |Sophia: Alerts, candidato |Visibilidade das condições; não novo motor de conformidade.
+|Revisão humana |React local; revisão de reconhecimento no Identity |Não são revisão auditável de ocorrência no servidor. Definir contrato próprio.
+|===
+
+=== Armazenamento observado
+
+Spring usa `jdbc:h2:mem:visaodoporto`, `ddl-auto=create-drop` e
+`open-in-view=false`. Não há persistência administrativa durável confirmada.
+Identity usa SQLAlchemy e SQLite por padrão; PostgreSQL é configurável, não
+é banco compartilhado com o Java. Regras, Fusion, Incident e Alerts usam estado
+em memória. Tracker pode persistir câmeras em JSON; os demais repositórios
+examinados são em memória. Reiniciar serviços pode perder estado e histórico.

@@ -1,0 +1,80 @@
+== API administrativa Spring Boot
+
+*IMPLEMENTADO na base 65c5f23.* Java alvo 21, Spring Boot 4.1.2. Local:
+`http://127.0.0.1:8080`. Sem autenticação implementada; usar dados fictícios.
+Fontes: controllers, DTOs, entidades e serviços em
+`backend/backend-springboot/src/main/java/br/com/visaodoporto/backend/`.
+
+=== Endpoints existentes
+
+[cols="1,3,3",options="header"]
+|===
+|Método |Caminho |Resposta e semântica
+|GET |/api/health |200: status UP, service visao-do-porto-backend, framework Spring Boot.
+|POST |/api/trabalhadores |201: entidade Trabalhador criada. Duplicação de matrícula: 400.
+|GET |/api/trabalhadores |200: lista de Trabalhador; sem paginação/envelope e sem ordem contratada.
+|GET |/api/trabalhadores/{id} |200: Trabalhador; inexistente: 404. ID é UUID.
+|POST |/api/trabalhadores/{trabalhadorId}/capacitacoes |201: CapacitacaoResponse; trabalhador inativo: 409.
+|GET |/api/trabalhadores/{trabalhadorId}/capacitacoes |200: lista, registradaEm decrescente; trabalhador inexistente: 404.
+|GET |/api/trabalhadores/{trabalhadorId}/capacitacoes/{codigo}/situacao |200: situação, data/fuso, registros e autorização NAO_AVALIADA.
+|===
+
+Não existem endpoints Java de visão, câmera, zona, ocorrência ou cliente HTTP
+Identity na base examinada. Não há OpenAPI Java gerado configurado nesta tarefa.
+
+=== Cadastro de trabalhador
+
+[source,json]
+----
+{"nome":"Pessoa fictícia","matricula":"DOC-001","empresa":"Empresa fictícia"}
+----
+
+Os três campos são obrigatórios, não brancos, com máximo de 255 caracteres no
+DTO. O serviço remove espaços nas extremidades e rejeita matrícula já existente.
+`ativo` começa true e não é campo de criação. A API atual não expõe operação
+de edição/desativação de trabalhador. Setor e cargo não existem nesta entidade.
+
+Resposta de exemplo *construída a partir do contrato*, não captura HTTP desta tarefa:
+
+[source,json]
+----
+{
+  "id": "00000000-0000-4000-8000-000000000001",
+  "nome": "Pessoa fictícia",
+  "matricula": "DOC-001",
+  "empresa": "Empresa fictícia",
+  "ativo": true
+}
+----
+
+=== Registro e consulta de capacitações
+
+`codigo`: `[A-Z0-9_-]{1,64}`; `nome`: até 150 caracteres;
+`realizadaEm` e `validaAte`: LocalDate obrigatórias; `verificada`: boolean
+obrigatório; `fonte`: não branca até 200; `verificadaPor`: até 100.
+Realização não pode ser futura; validade não pode anteceder a realização.
+Registro verificado exige verificador; não verificado não deve indicá-lo.
+`id`, `trabalhadorId` e `registradaEm` são gerados/derivados pelo servidor.
+
+Consulta usa Clock em America/Sao_Paulo e validade inclusiva no último dia.
+A precedência implementada é: sem registros -> AUSENTE; algum registro verificado
+e vigente -> VALIDA; senão, algum não verificado -> NAO_VERIFICADA; demais -> VENCIDA.
+Retorna `autorizacaoAcesso=NAO_AVALIADA` em todos esses casos.
+
+=== Erros e documentação baseada em evidências
+
+Validação de corpo e regras explícitas: 400; trabalhador não encontrado: 404;
+trabalhador inativo no cadastro de capacitação: 409. A configuração habilita
+Problem Details. Esta documentação não congela o texto integral de erros do
+framework nem afirma um envelope de erro idêntico ao da FastAPI.
+
+Testes fonte: `CapacitacaoApiTest`, `CapacitacaoServiceTest` e
+`TrabalhadorServiceTest`. Cobrem persistência via contexto de teste, validade,
+isolamento de pessoas/códigos, duplicação e rejeição de corpos inválidos.
+O relatório histórico registra 20 testes Java aprovados; não reexecutados aqui.
+Não há Spring REST Docs configurado. Os exemplos acima são contratuais; não
+são snippets automaticamente capturados de requisições executadas agora.
+
+=== Declarações extraídas do código
+
+include::gerado/spring-declaracoes.adoc[]

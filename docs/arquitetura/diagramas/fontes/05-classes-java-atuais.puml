@@ -1,0 +1,69 @@
+@startuml
+skinparam backgroundColor #FFFFFF
+skinparam defaultFontName Arial
+skinparam defaultFontSize 14
+skinparam shadowing false
+skinparam roundCorner 6
+skinparam ArrowColor #34536B
+skinparam classAttributeIconSize 0
+skinparam packageStyle rectangle
+skinparam ranksep 20
+skinparam nodesep 25
+title UML Java - entidades e serviços implementados
+class Trabalhador <<JPA>> #DCEAF7 {
+ - id : UUID
+ - nome : String
+ - matricula : String {unique}
+ - empresa : String
+ - ativo : boolean = true
+ + Trabalhador(nome, matricula, empresa)
+ + getId() : UUID
+ + getNome() : String
+ + getMatricula() : String
+ + getEmpresa() : String
+ + isAtivo() : boolean
+}
+class Capacitacao <<JPA>> #DCEAF7 {
+ - id : UUID
+ - trabalhador : Trabalhador
+ - codigo : String
+ - nome : String
+ - realizadaEm : LocalDate
+ - validaAte : LocalDate
+ - verificada : boolean
+ - fonte : String
+ - verificadaPor : String
+ - registradaEm : Instant
+ + Capacitacao(...)
+ + getId() : UUID
+ + getTrabalhador() : Trabalhador
+ + getCodigo() : String
+ + getNome() : String
+ + getRealizadaEm() : LocalDate
+ + getValidaAte() : LocalDate
+ + isVerificada() : boolean
+ + getFonte() : String
+ + getVerificadaPor() : String
+ + getRegistradaEm() : Instant
+}
+class TrabalhadorService #EAF3F8 {
+ + cadastrar(nome, matricula, empresa) : Trabalhador
+ + listar() : List<Trabalhador>
+ + buscarPorId(id : UUID) : Trabalhador
+}
+class CapacitacaoService #EAF3F8 {
+ + cadastrar(id, r) : CapacitacaoResponse
+ + listar(id : UUID) : List<CapacitacaoResponse>
+ + consultar(id, codigo) : ConsultaCapacitacaoResponse
+}
+Capacitacao "0..*" --> "1" Trabalhador : trabalhador / LAZY
+TrabalhadorService ..> Trabalhador
+Trabalhador -[hidden]down-> TrabalhadorService
+TrabalhadorService -[hidden]right-> CapacitacaoService
+CapacitacaoService ..> Capacitacao
+CapacitacaoService ..> Trabalhador
+legend bottom
+IMPLEMENTADO. Parâmetros de construtor e serviços abreviados para leitura.
+Getters mostrados; construtores protegidos JPA omitidos. Base 65c5f23.
+endlegend
+@enduml

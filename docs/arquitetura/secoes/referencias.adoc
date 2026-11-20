@@ -1,0 +1,28 @@
+== Referências e manutenção
+
+=== Fontes primárias
+
+* https://github.com/diegovitor90/visao-do-porto/tree/65c5f23b3b18f5e7e7e01a5f22c666714914194f[Visão do Porto: base de implementação].
+* https://github.com/sopphianatalia-debug/epi-vision-porto-itaqui/tree/ef88e1920bbed4feb0b0899d99eacdd184d35899[Sophia: base externa inspecionada].
+* https://www.wimdeblauwe.com/blog/2025/09/08/how-i-document-production-ready-spring-boot-applications/[Wim Deblauwe: metodologia Documentation as Code].
+* https://c4model.com/diagrams[C4: níveis de abstração e diagramas].
+* https://github.com/plantuml-stdlib/C4-PlantUML[C4-PlantUML: macros e biblioteca].
+* https://docs.asciidoctor.org/asciidoctor.js/latest/[Asciidoctor.js: geração HTML].
+* https://docs.ultralytics.com/models/yolo11/[Ultralytics: YOLO11].
+
+Inspiração metodológica: README de entrada, documento de arquitetura, diagramas
+editáveis e ADRs. A geração de APIs usa código e testes como evidências, mas não
+alega Spring REST Docs: esse plugin não está configurado e pom.xml foi preservado.
+O PDF desta revisão é impresso do HTML pelo Chrome; não é Asciidoctor PDF/Ruby.
+
+=== Política de atualização
+
+Ao mudar código: revisar contratos/campos/erros, atualizar testes pertinentes,
+rever estado implementado/proposto e editar fontes puml/adoc. Rodar extração,
+renderização e validação; revisar HTML/PDF. Capturas históricas não devem ser
+reescritas como se fossem resultados novos. Nova decisão aprovada ganha novo ADR;
+hipótese continua em pendências. Registrar versão e data após revisão.
+
+As declarações geradas e o manifesto de proveniência registram hashes das fontes.
+Eles detectam alterações, mas não substituem revisão semântica dos documentos.
+Scripts não fazem commit, push, instalação global ou download automático.

@@ -1,5 +1,11 @@
 # Contrato IA–backend: API real e evolução planejada
 
+> **Atualização arquitetural de 17/11/2026:** o [ADR-001](arquitetura/adrs/ADR-001.adoc)
+> aprova Java administrativo fora do fluxo principal de vídeo. A proposta abaixo
+> de encaminhar imagens por Spring está superada nesse ponto. O contrato HTTP
+> implementado da FastAPI permanece válido e não foi alterado. Ver o
+> [índice técnico atual](README.md). O restante do documento é preservado como histórico.
+
 Revisão: **17/11/2026**. Este é o documento único de referência. A primeira seção
 descreve a FastAPI local **v0.3.0**; a proposta histórica ao final é planejamento e
 não deve ser usada como payload do endpoint de análise.

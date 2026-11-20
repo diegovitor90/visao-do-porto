@@ -1,0 +1,60 @@
+== Propostas, riscos e próximas decisões
+
+=== Auditoria da ponte Spring / Identity
+
+[cols="2,3",options="header"]
+|===
+|Achado no código candidato |Impacto / adaptação a discutir
+|list_employees definido duas vezes |A versão não paginada sobrescreve a paginada; mais de 100 registros podem ser omitidos.
+|registration não tem unique no modelo Employee |A ponte pressupõe matrícula única; planejar detecção de duplicados e migração se houver dados.
+|Limites diferentes |Java aceita nome/matrícula até 255; Identity limita a 200/50. Reportar incompatibilidade sem truncar.
+|setor/cargo ausentes no Java |Python aceita ausência, mas cria PATIO_CARGA/OPERADOR. PATIO_CARGA não está entre os seis setores atuais; não inventar atribuição.
+|JWT fixo de demonstração no cliente |Externalizar configuração e renovar token; não reutilizar mecanismo de teste como autenticação definitiva.
+|IDs com semântica diferente |Documentar UUID Java, matrícula, UUID Identity e employee_code; resolver referências sem troca silenciosa.
+|===
+
+As verificações externas usam Spring simulado; não há comprovação com nosso
+Spring real. Primeiro incremento proposto: ponte de cadastro com testes de
+contrato e prova HTTP real, sem vídeo, pesos de EPI ou biometria.
+
+=== Decisões pendentes
+
+* Separação do atual registro Capacitacao em catálogo e certificação; migração e compatibilidade.
+* Fonte oficial de câmeras e ciclo de vida dos setores, evitando cadastros concorrentes.
+* Zona poligonal: coordenadas, câmera/referencial, versão e relação N:N a validar.
+* Responsável e armazenamento durável de ocorrência, evidência e revisão humana.
+* Como representar ocorrência anônima: Incident candidato exige empregado.
+* Integração entre epi_compliance e epi_rules: evitar dois vereditos concorrentes.
+* Uso do builder que infere MISSING por não detecção; avaliar visibilidade, qualidade e tempo.
+* Contratos de eventos: versão, IDs, sessão, timestamp, repetição, atraso e expiração.
+* Autenticação entre serviços, falhas parciais, URLs e portas de desenvolvimento/produção.
+* Banco durável: H2 atual é volátil; SQL Server/PostgreSQL são possibilidades não decididas.
+
+=== Validações mínimas para uma futura implementação
+
+Ponte: execução repetida sem duplicar, mais de 100 funcionários, concorrência,
+matrícula duplicada, campos longos, valores ausentes/inválidos, inativo, origem
+indisponível, falha parcial, token expirado, registro ausente sem exclusão e
+preservação de dados operacionais. O Java atual não expõe atualização de trabalhador;
+testar essas transições por contrato não equivale a tê-las disponíveis na API.
+
+Visão: modelo certo/classes reais, peso disponível, caixa válida, perda de
+visibilidade, enquadramento cortado, confiança baixa, estado indeterminado,
+expiração e não conversão automática de não detecção em infração.
+Não usar nosso modelo person-only para inferir ausência de EPIs.
+
+Revisão: operador autenticado, motivo obrigatório, histórico preservado,
+idempotência, referência de evidência e evento sem identidade quando necessário.
+Esses são critérios propostos, não testes já executados.
+
+=== Plano incremental sugerido
+
+. Corrigir contratos da ponte no projeto responsável, com ambiente isolado.
+. Demonstrar Spring real -> sincronizador -> Identity real com dados fictícios.
+. Acordar posse dos dados e contratos operacionais; registrar novos ADRs só após aprovação.
+. Avaliar modelos/serviços Python sem substituir YOLO11n ou alterar a API existente.
+. Integrar metadados e revisão após testes; manter frames no processamento Python.
+
+Arquivos potencialmente afetados no projeto externo: identity_client.py,
+spring_client.py, worker_sync.py, sync_trabalhadores.py, modelo/serviço Employee,
+configuração de autenticação, migração e testes. Não foram alterados nesta tarefa.

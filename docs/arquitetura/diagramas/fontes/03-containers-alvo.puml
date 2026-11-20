@@ -1,0 +1,41 @@
+@startuml
+!include <C4/C4_Container>
+skinparam backgroundColor #FFFFFF
+skinparam defaultFontName Arial
+skinparam defaultFontSize 14
+skinparam shadowing false
+skinparam roundCorner 6
+skinparam ArrowColor #34536B
+skinparam classAttributeIconSize 0
+skinparam packageStyle rectangle
+skinparam ranksep 20
+skinparam nodesep 20
+title C4 Container - alvo aprovado e candidatos
+LAYOUT_TOP_DOWN()
+Person(operador, "Operador", "Consulta e revisão futura")
+System_Ext(captura, "Captura", "Frames no Python")
+System_Boundary(vp, "Alvo aprovado; integração pendente") {
+  Container(web, "Interface preservada", "React", "Upload atual; revisão integrada futura")
+  Container(java, "Administrativo", "Spring Boot", "Trabalhadores e capacitações")
+  Container(vision, "Vision API preservada", "FastAPI / YOLO11n", "Análise atual de imagem/person")
+  Container(ponte, "Sincronizador", "Python - candidato", "Cópia administrativa fora do vídeo")
+  Container(identity, "Identity", "Python - candidato", "Cadastro operacional sincronizado")
+  Container(op, "Operação", "Python - candidatos", "PPE, Fusion, Rules, Incident, Alerts e Tracker")
+}
+Rel(operador, web, "Opera")
+Rel_R(web, java, "Cadastro futuro", "JSON")
+Rel_Down(web, vision, "Imagem atual", "HTTP")
+Rel_Down(captura, op, "Frames futuros")
+Rel(ponte, java, "Lê cadastro", "GET candidato")
+Rel_Down(ponte, identity, "Sincroniza", "HTTP candidato")
+Rel(identity, op, "Referências", "Proposto")
+Rel(op, web, "Metadados", "Contrato futuro")
+Lay_R(web, java)
+Lay_R(vision, ponte)
+Lay_R(op, identity)
+legend bottom
+Direção aprovada: frames no Python; Java administrativo.
+Relações candidatas/propostas não comprovam integração.
+Agrupamento operacional não define quantidade final de deploys.
+endlegend
+@enduml

@@ -1,0 +1,85 @@
+== Vision API FastAPI
+
+*IMPLEMENTADO:* versão OpenAPI 0.3.0. Local: `http://127.0.0.1:8000`.
+Fonte de verdade: `backend/fastapi/main.py` e `vision_detector.py`.
+
+[cols="1,3,3",options="header"]
+|===
+|Método |Caminho |Semântica
+|GET |/api/health |Saúde HTTP, serviço e timestamp UTC; não executa inferência.
+|GET |/api/v1/vision/status |Disponibilidade do módulo e cache. READY não garante inferência nem carrega pesos.
+|POST |/api/v1/vision/analyze |Validação de imagem e inferência de pessoas.
+|GET |/openapi.json |Schema gerado pelo FastAPI; snapshot documental em api/gerado/openapi-fastapi.json.
+|GET |/docs e /redoc |Interfaces automáticas já existentes do FastAPI; nenhum endpoint novo foi adicionado.
+|===
+
+=== Entrada de análise
+
+`multipart/form-data`, parte obrigatória `file`, tipo declarado image/jpeg ou
+image/png. Limite exato de bytes: 5.242.880 (5 MiB), e 20.000.000 pixels.
+O formato real também precisa ser JPEG/PNG e passar Image.verify do Pillow.
+O endpoint não recebe o JSON/base64 usado pelo pipeline candidato da Sophia.
+
+[source,powershell]
+----
+curl.exe -F "file=@imagem-autorizada.png;type=image/png" http://127.0.0.1:8000/api/v1/vision/analyze
+----
+
+=== Saída e inferência
+
+Campos: filename, width, height, status, inference_performed, model, detections,
+message. Em sucesso: `COMPLETED`, `true`, `yolo11n`. Cada detecção contém
+class_id=0, class_name=person, confidence e bbox x1/y1/x2/y2 em pixels.
+Lista vazia é sucesso sem pessoa detectada; não significa falha.
+
+Detector atual: YOLO11n, CPU, confiança mínima 0.40, classes=[0].
+Carregamento sob demanda com cache; inferência em run_in_threadpool.
+Confidence é arredondada a quatro casas, coordenadas a duas. Pydantic tipa
+os números; os schemas atuais não impõem todos os limites geométricos ou [0,1].
+
+Exemplo *construído a partir do contrato*, com zero detecções; não é nova evidência HTTP:
+
+[source,json]
+----
+{
+  "filename": "imagem-autorizada.png",
+  "width": 640,
+  "height": 480,
+  "status": "COMPLETED",
+  "inference_performed": true,
+  "model": "yolo11n",
+  "detections": [],
+  "message": "Análise de imagem concluída."
+}
+----
+
+[cols="1,3",options="header"]
+|===
+|HTTP |Causa
+|413 |Mais de 5 MiB ou 20 MP.
+|415 |MIME declarado ou formato real não suportado.
+|422 |Imagem inválida/corrompida ou validação automática de entrada.
+|503 |Falha no detector/inferência/construção da resposta; mensagem genérica sem detalhes internos.
+|===
+
+Erros explícitos retornam `detail` textual. Validação automática, como ausência
+de file, pode retornar `detail` como lista. Não assumir um único tipo de detail.
+
+=== Testes, evidência real e consumidores
+
+`test_main.py` usa monkeypatch/Mock: resultado com pessoa, vazio, falha, threadpool,
+disponibilidade e rejeição de imagens. Evidência histórica: 17 aprovados.
+Requisição real histórica: uma pessoa com confiança 0.8246. Isso não é 82.46% de
+acurácia nem demonstra EPIs, reconhecimento ou rastreamento operacional.
+
+O parser React não preserva model e não restringe status a COMPLETED. Fixtures
+usam ANALYZED; o smoke opcional ainda espera v0.2.0. Não usar esses testes para
+afirmar integração real v0.3.0. A API atual deve ser preservada.
+
+O snapshot OpenAPI é gerado por importação de main e app.openapi(), sem chamar
+o detector, endpoint de status ou qualquer teste/inferência. As declarações
+abaixo são extraídas por AST, e não mantidas como cópia manual de schemas.
+
+=== Declarações extraídas do código
+
+include::gerado/fastapi-declaracoes.adoc[]

@@ -1,0 +1,33 @@
+@startuml
+!include <C4/C4_Container>
+skinparam backgroundColor #FFFFFF
+skinparam defaultFontName Arial
+skinparam defaultFontSize 14
+skinparam shadowing false
+skinparam roundCorner 6
+skinparam ArrowColor #34536B
+skinparam classAttributeIconSize 0
+skinparam packageStyle rectangle
+skinparam ranksep 20
+skinparam nodesep 20
+title C4 Container - estado atual
+LAYOUT_TOP_DOWN()
+Person(usuario, "Usuário", "Imagem autorizada")
+Person(admin, "Cliente administrativo", "HTTP; dados fictícios")
+System_Boundary(vp, "Visão do Porto - implementado") {
+  Container(web, "Interface", "React 0.1.1 / navegador", "Upload, caixas e revisão demonstrativa em localStorage")
+  Container(vite, "Servidor de desenvolvimento", "Vite", "Proxy /api/v1/vision; não acompanha build de produção")
+  Container(vision, "Vision API 0.3.0", "FastAPI / Python / YOLO11n CPU", "Valida imagem e detecta person; YOLO no mesmo processo")
+  Container(java, "Núcleo administrativo", "Spring Boot / Java", "Trabalhador e Capacitacao")
+  ContainerDb(h2, "Dados administrativos", "H2 em memória, embutido no Java", "create-drop; armazenamento volátil")
+}
+Rel_Down(usuario, web, "Seleciona imagem / lê resultado")
+Rel_Down(web, vite, "Upload / resposta JSON", "HTTP multipart")
+Rel_Down(vite, vision, "Encaminha /api/v1/vision", "HTTP :8000")
+Rel_Down(admin, java, "Cadastro e consulta", "HTTP :8080 / JSON")
+Rel_Down(java, h2, "Persiste e consulta", "JPA/JDBC")
+legend bottom
+Todas as relações desenhadas são do estado atual.
+Não há conexão Java-FastAPI implementada.
+endlegend
+@enduml

@@ -1,0 +1,32 @@
+@startuml
+skinparam backgroundColor #FFFFFF
+skinparam defaultFontName Arial
+skinparam defaultFontSize 14
+skinparam shadowing false
+skinparam roundCorner 6
+skinparam ArrowColor #34536B
+skinparam classAttributeIconSize 0
+skinparam packageStyle rectangle
+title DFD - direção operacional proposta
+top to bottom direction
+rectangle "Câmera / captura\nPROPOSTO" as camera #FFF0D9
+rectangle "Visão Python\nPPE + associação\nCANDIDATO" as vision #EDE4F7
+rectangle "Consolidação / regras\nFusion / Rules\nCANDIDATOS" as rules #EDE4F7
+rectangle "Ocorrência / alerta\nIncident / Alerts\nCANDIDATOS" as incident #EDE4F7
+database "Evidência e revisão durável\nPROPOSTO / dono a definir" as store #FFF0D9
+actor "Operador" as operator
+rectangle "Spring administrativo\nIMPLEMENTADO" as java #DCEAF7
+rectangle "Sincronização / referência\nPROPOSTO" as sync #FFF0D9
+camera --> vision : frames no Python
+vision --> rules : observações + qualidade\nsem identidade presumida
+rules --> incident : avaliação versionada\nestado indeterminado permitido
+incident --> store : evento + referências\ncontrato futuro
+store --> operator : evidência / resultado
+operator --> store : revisão com autoria e motivo
+java ..> sync : cadastro fora do vídeo
+sync ..> rules : metadados autorizados\ncontrato futuro
+legend bottom
+PROPOSTA; nenhum frame atravessa Java no fluxo principal.
+Não detecção não comprova infração. Revisão persistente ainda não implementada.
+endlegend
+@enduml

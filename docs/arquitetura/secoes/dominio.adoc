@@ -1,0 +1,75 @@
+== Domínio, classes e dados
+
+=== Modelo de domínio
+
+Uma detecção localiza uma pessoa; não estabelece identidade administrativa.
+Uma capacitação válida não concede autorização de acesso. Um EPI atribuído a
+um trabalhador não comprova uso visual. Um alerta comunicado não substitui
+avaliação, evidência ou decisão humana.
+
+.Domínio conceitual: existente e proposto, sem impor banco único
+image::04-dominio.svg[Domínio,width=100%]
+
+=== Classes Java implementadas
+
+Há duas entidades JPA nesta base. `Capacitacao` possui associação obrigatória
+`ManyToOne(fetch=LAZY)` com `Trabalhador`, FK `trabalhador_id` e índice composto
+por trabalhador/código. Vários registros do mesmo código são permitidos.
+A entidade Trabalhador não declara uma coleção inversa de capacitações.
+
+.UML: entidades e serviços Java efetivamente implementados
+image::05-classes-java-atuais.svg[Classes atuais,width=100%]
+
+=== Classes propostas
+
+O desenho abaixo é conceitual. Não cria classes JPA nem aprova migração.
+Se catálogo e certificação forem separados, a atual Capacitacao deverá ser
+mapeada/migrada com preservação das APIs, datas, verificação e fontes.
+Camera, regras e incidentes exigem análise do código candidato antes de
+qualquer duplicação em Java. Revisão de ocorrência exige operador, decisão,
+justificativa e instante; regras de imutabilidade ainda serão acordadas.
+
+.UML conceitual proposto; nomes e relacionamentos sujeitos a decisão
+image::06-classes-propostas.svg[Classes propostas,width=100%]
+
+=== DER existente
+
+DER lógico derivado dos mapeamentos JPA. O banco em execução não foi
+introspectado nesta tarefa; representação UUID/boolean/timestamp é lógica,
+sem afirmar detalhes físicos de um dialeto SQL futuro.
+
+.DER atual: somente duas tabelas JPA
+image::07-der-atual.svg[DER atual,width=100%]
+
+=== Modelo de dados futuro
+
+As relações operacionais são hipótese. Uma câmera pode observar várias zonas,
+e uma zona pode receber várias câmeras, mas esse N:N não está aprovado.
+Polígonos devem ter referencial de imagem/câmera e versão. Referência a
+trabalhador em ocorrência é opcional e lógica entre serviços, não uma FK
+automática entre bancos. O Incident candidato atual exige empregado: divergência
+a resolver para ocorrências anônimas.
+
+.DER futuro conceitual: armazenamento e cardinalidades ainda propostos
+image::08-der-proposto.svg[DER proposto,width=100%]
+
+=== Glossário
+
+[cols="1,3",options="header"]
+|===
+|Termo |Definição no projeto
+|Trabalhador |Cadastro administrativo identificado por UUID Java e matrícula única.
+|Capacitacao atual |Registro de realização/validade por trabalhador; não catálogo isolado.
+|Certificação proposta |Comprovação de conclusão; conceito futuro, não entidade implementada.
+|Detection / bbox |Classe, confiança e caixa em pixels de uma imagem; sem identidade civil.
+|Confiança |Score do detector em uma previsão. Não é acurácia, precisão ou recall do modelo.
+|Track |Trajetória temporária. Não é funcionário; precisa de câmera/sessão para referência segura.
+|Setor |Código operacional. Não equivale automaticamente a zona poligonal na imagem.
+|Zona |Região monitorada cujo sistema de coordenadas, versão e regras precisam de definição.
+|Conformidade |Avaliação de evidências sob regra e versão; deve admitir indeterminação.
+|Ocorrência / incidente |Registro de evento e ciclo de vida. Seu contrato integrado está pendente.
+|Evidência |Referência verificável ao que sustentou uma avaliação; retenção/acesso pendentes.
+|Revisão |Decisão humana com motivo e autoria. ACK de alerta não equivale a revisão completa.
+|Identity employee_id |No CRUD, UUID interno; na resposta de reconhecimento, employee_code. Não misturar.
+|Fonte oficial |Componente responsável por manter e validar o dado; cópia não vira cadastro concorrente.
+|===

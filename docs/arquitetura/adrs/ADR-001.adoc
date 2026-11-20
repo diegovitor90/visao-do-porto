@@ -1,0 +1,40 @@
+== ADR-001: arquitetura híbrida e Java fora do fluxo de vídeo
+
+*Status:* APROVADO pelo responsável na solicitação de documentação de 17/11/2026.
+*Escopo:* direção arquitetural; não comprovação de integração implementada.
+
+=== Contexto
+
+O projeto possui núcleo administrativo Java, visão Python e interface React.
+Documentos anteriores propunham passagem de imagens pelo Spring. A contribuição
+da Sophia apresenta módulos operacionais reutilizáveis, ainda não integrados.
+É necessário estabelecer fronteiras sem substituir a FastAPI validada.
+
+=== Decisão
+
+* Spring Boot é o núcleo administrativo: trabalhadores, capacitações, futuras
+  certificações e integrações corporativas autorizadas.
+* Python/FastAPI executa visão computacional e processamento operacional.
+* Nenhum frame de vídeo atravessa o Spring no fluxo principal.
+* Preservar YOLO11n e a FastAPI v0.3.0 atual.
+* Identity pode receber dados administrativos sincronizados fora do caminho crítico de vídeo.
+* Identity, Tracker, PPE, Fusion, Rules, Incident e Alerts são candidatos; sua adoção
+  e os contratos de integração dependem de avaliação e validação.
+* SQL Server é possibilidade futura. A dependência JDBC existente não comprova adoção.
+
+=== Consequências
+
+Separar plano administrativo de frames reduz acoplamento e evita criar um proxy
+Java para transporte de vídeo. Adaptadores precisam de contratos de metadados,
+identificadores, autenticação, falha, repetição e atualização. Banco de ocorrência,
+revisão humana e zonas ainda precisam de decisões próprias.
+
+Propostas antigas que encaminham frames por Java ficam superadas nesse ponto.
+Não alterar o endpoint atual para acomodar o pipeline candidato nesta fase.
+
+=== Alternativas consideradas e limites
+
+O encaminhamento de imagens pelo Spring constava no planejamento anterior e
+não foi escolhido como fluxo principal. Adoção integral do repositório externo,
+reconhecimento facial, SQL Server e nova modelagem completa em JPA não são
+decisões aprovadas neste ADR. Não há outros ADRs de adoção nesta revisão.

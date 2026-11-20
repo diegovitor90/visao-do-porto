@@ -1,0 +1,92 @@
+== Operação local, configuração e testes
+
+=== Pré-requisitos e limites
+
+Ambiente histórico: Windows, Python 3.11.9, Node 22.17.1/npm 10.9.2;
+Java alvo 21 e Maven Wrapper 3.10.0, com execução histórica também em JDK 26.
+Não há comprovação de instalação limpa multiplataforma. Nenhuma dependência
+da aplicação foi instalada/modificada nesta tarefa documental.
+
+Pesos e imagens privadas ficam fora do Git. Fornecer imagem própria/autorizada.
+Não incluir dados reais de trabalhadores, segredos ou arquivos .env privados.
+
+=== Spring Boot
+
+A partir da raiz, em terminal próprio:
+
+[source,powershell]
+----
+cd backend/backend-springboot
+.\mvnw.cmd -o test
+.\mvnw.cmd spring-boot:run
+----
+
+`-o` exige cache Maven preenchido. Download inicial de dependências requer
+preparação autorizada. Serviço em 127.0.0.1:8080, H2 em memória, create-drop,
+console H2 desativado. Dados são perdidos ao encerrar/recriar a aplicação.
+Driver mssql-jdbc presente não torna SQL Server banco ativo nem requisito.
+
+=== FastAPI e demonstração
+
+[source,powershell]
+----
+cd backend/fastapi
+.\.venv\Scripts\python.exe -B -m pytest test_main.py -q -p no:cacheprovider
+.\.venv\Scripts\python.exe -m uvicorn main:app --host 127.0.0.1 --port 8000
+----
+
+Usar diretório backend/fastapi: MODEL_NAME é relativo. Disponibilizar yolo11n.pt
+localmente antes da inferência; se ausente, Ultralytics pode tentar download.
+requirements.txt registra versões verificadas; não é lock completo.
+Ambiente novo precisa de preparação separada, não executada por estes scripts de docs.
+
+Em outro terminal, mesma pasta:
+
+[source,powershell]
+----
+.\.venv\Scripts\python.exe demo_visual.py --image C:/caminho/imagem-autorizada.png
+.\.venv\Scripts\python.exe demo_visual.py --webcam 0
+----
+
+São comandos alternativos. Q encerra a janela. OpenCV precisa de GUI para demo;
+modo webcam não foi validado nesta documentação. Não há gravação automática.
+Demo usa detector diretamente; não comprova integração HTTP com o frontend.
+
+=== Frontend
+
+[source,powershell]
+----
+cd frontend
+npm run build
+npm run dev
+----
+
+Dependências precisam estar disponíveis (npm ci é preparação separada).
+Abrir 127.0.0.1:5173. `VISION_API_TARGET` configura proxy Vite, padrão
+127.0.0.1:8000. O proxy de desenvolvimento não acompanha o build estático.
+
+[source,powershell]
+----
+# Terminal em frontend; Chrome/Chromium já disponível:
+$env:PLAYWRIGHT_CHROMIUM_EXECUTABLE = 'C:\Program Files\Google\Chrome\Application\chrome.exe'
+npm test
+----
+
+Não manter outro Vite na porta da suíte. O smoke habilitado por
+VISION_API_SMOKE_IMAGE está desatualizado para v0.3.0; não representa validação
+atual ponta a ponta. Avisos históricos de TestClient/httpx não são falha da inferência.
+
+=== Operação dos candidatos Sophia
+
+Não há launcher integrado ao repositório principal. O start_demo externo usa
+portas 8000/8001/8002/8003/8004/8005/8010; 8000 colide com nossa FastAPI.
+Não executar sem plano de portas, ambiente isolado e dados fictícios.
+O script de sincronização externo fica em epi_integration/scripts/sync_trabalhadores.py,
+requer httpx/PyJWT e pressupõe Identity autenticado disponível.
+Não o executar como parte do build documental: escreve no Identity.
+
+=== Manutenção documental
+
+Para diagramas/HTML/PDF e comandos completos, consultar
+`docs/operacao/documentacao.md`. O build não inicia aplicação, não executa
+testes Java/YOLO e não modifica pom.xml, banco ou configuração de execução.

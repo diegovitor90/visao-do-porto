@@ -1,0 +1,74 @@
+@startuml
+skinparam backgroundColor #FFFFFF
+skinparam defaultFontName Arial
+skinparam defaultFontSize 14
+skinparam shadowing false
+skinparam roundCorner 6
+skinparam ArrowColor #34536B
+skinparam classAttributeIconSize 0
+skinparam packageStyle rectangle
+title DER futuro conceitual - domínios separados
+hide circle
+left to right direction
+package "Administrativo - evolução proposta" {
+ entity trabalhador {
+  * id <<PK>>
+}
+ entity catalogo_capacitacao {
+  * id <<PK>>
+}
+ entity certificacao {
+  * id <<PK>>
+  trabalhador_id <<FK>>
+  catalogo_id <<FK>>
+}
+ trabalhador ||..o{ certificacao
+ catalogo_capacitacao ||..o{ certificacao
+}
+package "Operacional - modelo conceitual, banco não definido" {
+ entity camera {
+  * id <<PK>>
+}
+ entity zona {
+  * id <<PK>>
+  versão
+  referencial
+}
+ entity cobertura_camera_zona {
+  * camera_ref
+  * zona_ref
+  polígono
+}
+ entity regra_zona {
+  * id
+  * versão
+  zona_ref
+}
+ entity ocorrencia {
+  * id
+  trabalhador_ref [opcional]
+  regra_ref [opcional]
+}
+ entity evidencia {
+  * id
+  ocorrencia_ref
+}
+ entity revisao {
+  * id
+  ocorrencia_ref
+  operador
+  motivo
+}
+ camera ||..o{ cobertura_camera_zona
+ zona ||..o{ cobertura_camera_zona
+ zona ||..o{ regra_zona
+ regra_zona |o..o{ ocorrencia
+ ocorrencia ||..o{ evidencia
+ ocorrencia ||..o{ revisao
+}
+trabalhador |o..o{ ocorrencia : referência lógica externa\nNÃO FK entre serviços
+legend bottom
+PROPOSTA. Não é schema aprovado nem migração executável.
+N:N câmera/zona e titularidade do armazenamento ainda em discussão.
+endlegend
+@enduml

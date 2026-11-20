@@ -1,0 +1,74 @@
+@startuml
+skinparam backgroundColor #FFFFFF
+skinparam defaultFontName Arial
+skinparam defaultFontSize 14
+skinparam shadowing false
+skinparam roundCorner 6
+skinparam ArrowColor #34536B
+skinparam classAttributeIconSize 0
+skinparam packageStyle rectangle
+skinparam ranksep 20
+skinparam nodesep 25
+title UML conceitual proposto - sem decisão de persistência
+top to bottom direction
+class Trabalhador <<existente>> #DCEAF7
+class CapacitacaoCatalogo <<proposta>> #FFF0D9 {
+  codigo
+  nome
+}
+class Certificacao <<proposta>> #FFF0D9 {
+  realizadaEm
+  validaAte
+  verificação
+  fonte
+}
+class Camera <<candidato>> #EDE4F7 {
+  camera_id
+  setor
+  tipo
+  posiçãoNoMapa
+}
+class ZonaOperacional <<proposta>> #FFF0D9 {
+  id
+  polígono
+  referencial
+  versão
+}
+class RegraZona <<proposta>> #FFF0D9 {
+  id
+  versão
+  requisitosEPI
+  políticasTemporais
+}
+class Ocorrencia <<proposta>> #FFF0D9 {
+  id
+  estado
+  referênciaRegra
+  trabalhadorOpcional
+}
+class Evidencia <<proposta>> #FFF0D9 {
+  id
+  referência
+  instante
+  origem
+}
+class RevisaoOcorrencia <<proposta>> #FFF0D9 {
+  id
+  operador
+  decisão
+  motivo
+  instante
+}
+Trabalhador "1" .. "0..*" Certificacao
+CapacitacaoCatalogo "1" .. "0..*" Certificacao
+Camera "0..*" .. "0..*" ZonaOperacional
+ZonaOperacional "1" .. "0..*" RegraZona
+RegraZona "0..1" .. "0..*" Ocorrencia
+Ocorrencia "1" .. "0..*" Evidencia
+Ocorrencia "1" .. "0..*" RevisaoOcorrencia
+Ocorrencia "0..*" .. "0..1" Trabalhador : referência lógica
+legend bottom
+Não são classes Java criadas. Cardinalidades e atributos conceituais a validar.
+Capacitacao atual exige plano de migração para catálogo/certificação.
+endlegend
+@enduml

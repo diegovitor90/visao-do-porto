@@ -1,0 +1,39 @@
+== Fluxos de dados
+
+=== Sincronização administrativa proposta
+
+É uma leitura periódica/acionada do cadastro Java e atualização de uma cópia no
+Identity. Embora se diga Spring -> Identity, o código candidato faz o pull por
+um cliente Python. Não transporta frames, não cadastra biometria e não identifica
+automaticamente ninguém. Não há prova com o Spring real desta base.
+
+.DFD administrativo: proposta com ponte candidata
+image::09-dfd-admin.svg[DFD administrativo,width=100%]
+
+Chave candidata: `matricula` -> `registration`. Nome e ativo são sincronizados;
+empresa permanece no Spring. Setor/cargo não existem no Java atual. Omitidos na
+origem, não devem virar afirmações administrativas inventadas. Valores ausentes,
+desconhecidos, divergências e desativação precisam de regras explícitas.
+
+=== Análise visual implementada
+
+O usuário fornece uma imagem; FastAPI verifica tipo declarado, conteúdo,
+tamanho e integridade. Só então chama o detector via threadpool. Resposta válida
+pode conter zero pessoas. Falha retorna HTTP 503 genérico. Não gera ocorrência.
+
+.DFD atual: imagem, validação, inferência e resultado
+image::10-dfd-visao-atual.svg[DFD visual atual,width=100%]
+
+=== Vídeo, ocorrência e revisão: proposta
+
+O caminho principal fica no Python. O diagrama apresenta uma possibilidade
+para discussão; não afirma implementação de vídeo integrado, regras de zona,
+registro durável de evidências ou revisão em servidor.
+
+.DFD operacional proposto: frames fora do Spring, metadados com contrato futuro
+image::11-dfd-operacional-proposto.svg[DFD operacional proposto,width=100%]
+
+Observação sem identidade deve permanecer anônima. O código candidato Incident
+exige employee_id para abrir incidente; não satisfaz por si só esse desenho.
+Não detecção não comprova falta de EPI. O builder candidato que produz MISSING
+por omissão precisa ser revisto/validado antes de decisões operacionais.

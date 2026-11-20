@@ -1,0 +1,42 @@
+@startuml
+skinparam backgroundColor #FFFFFF
+skinparam defaultFontName Arial
+skinparam defaultFontSize 14
+skinparam shadowing false
+skinparam roundCorner 6
+skinparam ArrowColor #34536B
+skinparam classAttributeIconSize 0
+skinparam packageStyle rectangle
+title DER atual - mapeamentos administrativos
+hide circle
+entity trabalhadores #DCEAF7 {
+ * id : UUID <<PK>>
+ --
+ * nome : varchar(255)
+ * matricula : varchar(255) <<UNIQUE>>
+ * empresa : varchar(255)
+ * ativo : boolean
+}
+entity capacitacoes #DCEAF7 {
+ * id : UUID <<PK>>
+ --
+ * trabalhador_id : UUID <<FK>>
+ * codigo : varchar(64)
+ * nome : varchar(150)
+ * realizada_em : LocalDate
+ * valida_ate : LocalDate
+ * verificada : boolean
+ * fonte : varchar(200)
+ verificada_por : varchar(100)
+ * registrada_em : Instant
+}
+trabalhadores ||--o{ capacitacoes : trabalhador_id
+note bottom of capacitacoes
+ Índice (trabalhador_id, codigo), não único.
+ * = não nulo; nomes snake_case derivados da convenção JPA/Spring.
+end note
+legend bottom
+IMPLEMENTADO: DER lógico de JPA, não introspecção física.
+H2 em memória; não há tabelas operacionais no Java atual.
+endlegend
+@enduml

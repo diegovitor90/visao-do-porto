@@ -1,0 +1,25 @@
+// Gerado; editar main.py e regenerar, não este trecho.
+[source,python]
+----
+class BoundingBox(BaseModel):
+    x1: float
+    y1: float
+    x2: float
+    y2: float
+
+class Detection(BaseModel):
+    class_id: int
+    class_name: str
+    confidence: float
+    bbox: BoundingBox
+
+class ImageAnalysisResponse(BaseModel):
+    filename: str
+    width: int
+    height: int
+    status: str
+    inference_performed: bool
+    model: str
+    detections: list[Detection]
+    message: str
+----

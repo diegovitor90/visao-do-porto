@@ -1,0 +1,26 @@
+@startuml
+skinparam backgroundColor #FFFFFF
+skinparam defaultFontName Arial
+skinparam defaultFontSize 14
+skinparam shadowing false
+skinparam roundCorner 6
+skinparam ArrowColor #34536B
+skinparam classAttributeIconSize 0
+skinparam packageStyle rectangle
+title DFD - análise de imagem implementada
+top to bottom direction
+actor Usuário as user
+rectangle "React / Vite\nIMPLEMENTADO" as web #DCEAF7
+rectangle "FastAPI\nvalidação JPEG/PNG\n5 MiB / 20 MP / integridade" as api #DCEAF7
+rectangle "run_in_threadpool\nYOLO11n CPU / person" as model #DCEAF7
+user --> web : imagem autorizada
+web --> api : multipart file
+api --> model : bytes validados
+model --> api : detecções reais
+api --> web : COMPLETED + JSON\nou erro HTTP
+web --> user : caixas e confiança
+legend bottom
+IMPLEMENTADO. Zero detecções é sucesso.
+Não há identidade, ocorrência ou Spring nesse fluxo.
+endlegend
+@enduml

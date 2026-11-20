@@ -1,0 +1,30 @@
+@startuml
+skinparam backgroundColor #FFFFFF
+skinparam defaultFontName Arial
+skinparam defaultFontSize 14
+skinparam shadowing false
+skinparam roundCorner 6
+skinparam ArrowColor #34536B
+skinparam classAttributeIconSize 0
+skinparam packageStyle rectangle
+title DFD - sincronização administrativa candidata
+top to bottom direction
+actor "Cliente administrativo" as admin
+rectangle "Spring Boot\nGET /api/trabalhadores\nIMPLEMENTADO" as spring #DCEAF7
+database "H2\nTrabalhador / Capacitacao" as h2 #DCEAF7
+rectangle "Sincronizador Python\nCANDIDATO" as sync #EDE4F7
+database "Identity / Employee\nCópia operacional candidata" as identity #EDE4F7
+admin --> spring : cadastro JSON fictício
+spring --> h2 : JPA
+sync --> spring : consulta HTTP de trabalhadores
+spring --> sync : lista administrativa
+sync --> identity : cria/atualiza cópia\nmatrícula -> registration
+note bottom of sync
+ Revisar paginação, unicidade, campos e token.
+ Fora do caminho crítico do vídeo.
+ Não inscreve biometria; não identifica pessoa.
+end note
+legend bottom
+Azul: implementado. Roxo: candidato; ligação real não comprovada.
+endlegend
+@enduml

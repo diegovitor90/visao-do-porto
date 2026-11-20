@@ -1,0 +1,35 @@
+@startuml
+skinparam backgroundColor #FFFFFF
+skinparam defaultFontName Arial
+skinparam defaultFontSize 14
+skinparam shadowing false
+skinparam roundCorner 6
+skinparam ArrowColor #34536B
+skinparam classAttributeIconSize 0
+skinparam packageStyle rectangle
+title Modelo de domínio - estados diferenciados
+top to bottom direction
+class Trabalhador #DCEAF7
+class "Capacitacao atual\nregistro individual" as Atual #DCEAF7
+class "Catálogo de capacitações" as Catalogo #FFF0D9
+class "Certificação" as Cert #FFF0D9
+class "Câmera" as Camera #EDE4F7
+class "Zona poligonal" as Zona #FFF0D9
+class "Regra de zona" as Regra #FFF0D9
+class "Ocorrência" as Oc #FFF0D9
+class "Evidência" as Ev #FFF0D9
+class "Revisão humana" as Rev #FFF0D9
+Trabalhador "1" -- "0..*" Atual : possui hoje
+Trabalhador "1" .. "0..*" Cert : proposta
+Catalogo "1" .. "0..*" Cert : proposta
+Camera "0..*" .. "0..*" Zona : cobertura a definir
+Zona "1" .. "0..*" Regra
+Regra "0..1" .. "0..*" Oc : versão de referência
+Oc "1" .. "0..*" Ev
+Oc "1" .. "0..*" Rev
+Trabalhador "0..1" .. "0..*" Oc : vínculo opcional / referência
+legend bottom
+Azul: implementado no principal. Roxo: candidato externo.
+Amarelo e linhas pontilhadas: proposta, não tabela nem FK aprovada.
+endlegend
+@enduml

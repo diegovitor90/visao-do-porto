@@ -1,0 +1,51 @@
+= Visão do Porto: arquitetura e contratos
+:doctype: book
+:lang: pt-BR
+:revnumber: 1.0
+:revdate: 18/11/2026
+:revremark: Base 65c5f23; documentação para revisão
+:toc: macro
+:toc-title: Sumário
+:sectnums:
+:sectnumlevels: 3
+:figure-caption: Figura
+:table-caption: Tabela
+:icons: font
+:imagesdir: diagramas/imagens
+:chapter-signifier: Capítulo
+:experimental:
+
+[.lead]
+Backend híbrido Java + Python, interface React e integração operacional proposta.
+
+*Referência de implementação:* main em `65c5f23b3b18f5e7e7e01a5f22c666714914194f`.
+
+*Decisão aprovada:* Spring Boot é o núcleo administrativo. Nenhum frame de vídeo
+atravessa o Spring no fluxo principal. A FastAPI v0.3.0 e o YOLO11n são preservados.
+
+*Situação:* piloto acadêmico, sem validação operacional portuária. A aprovação
+da direção arquitetural não equivale a integração implementada dos módulos candidatos.
+
+toc::[]
+
+include::secoes/introducao.adoc[]
+
+include::secoes/auditoria.adoc[]
+
+include::secoes/arquitetura.adoc[]
+
+include::secoes/dominio.adoc[]
+
+include::secoes/fluxos.adoc[]
+
+include::adrs/ADR-001.adoc[]
+
+include::../api/spring.adoc[]
+
+include::../api/fastapi.adoc[]
+
+include::../operacao/execucao.adoc[]
+
+include::secoes/pendencias.adoc[]
+
+include::secoes/referencias.adoc[]

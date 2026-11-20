@@ -1,0 +1,35 @@
+== Introdução e objetivos
+
+O Visão do Porto é um piloto acadêmico para apoiar observação de segurança em
+ambiente portuário. Seu estado implementado combina cadastro administrativo,
+análise de imagem para localizar pessoas e uma interface demonstrativa.
+A evolução inclui processamento operacional e revisão humana, sujeitos a validação.
+
+Esta documentação orienta desenvolvimento, integração e apresentação técnica.
+Descreve o que existe, a direção aprovada e as propostas ainda abertas. Não
+estabelece autorização de acesso, conformidade legal ou aptidão para operação real.
+
+=== Objetivos de qualidade
+
+[cols="1,3",options="header"]
+|===
+|Objetivo |Critério de avaliação
+|Rastreabilidade |Cada afirmação técnica remete a fonte, teste ou decisão identificada.
+|Isolamento |Falha de sincronização administrativa não interrompe a visão; cenário futuro a testar.
+|Integridade |Preservar validações de imagem e diferenciar ausência de evidência de infração.
+|Evolução |Mudar contratos com revisão e testes; diagramas editáveis junto do código.
+|Privacidade |Não incluir imagens privadas, pesos, segredos ou dados pessoais nesta documentação.
+|===
+
+=== Convenções de estado
+
+* *IMPLEMENTADO*: localizado no código da base analisada.
+* *EVIDÊNCIA HISTÓRICA*: resultado registrado anteriormente; não reexecutado nesta tarefa.
+* *APROVADO*: decisão arquitetural expressa pelo responsável, ainda podendo exigir implementação.
+* *CANDIDATO*: código externo inspecionado para possível reutilização; integração não comprovada.
+* *PROPOSTO*: desenho para discussão; não é tabela, endpoint ou funcionalidade existente.
+* *NÃO VERIFICADO*: falta execução, artefato ou aceite suficiente.
+
+Nos diagramas, títulos e legendas explicitam o estado. Relação conceitual não
+implica chave estrangeira entre bancos de serviços diferentes. C4 Container
+representa aplicação/armazenamento lógico; não afirma implantação em Docker.

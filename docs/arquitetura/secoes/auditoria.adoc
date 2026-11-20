@@ -1,0 +1,52 @@
+== Auditoria e base de evidências
+
+=== Recorte inspecionado
+
+Inspeção de 17/11/2026: branch local `main`, HEAD `65c5f23`, árvore inicialmente
+limpa. A documentação é produzida sobre essa base sem troca de branch.
+A branch remota `feature/integracao-sophia` foi conferida no mesmo commit.
+Código externo: `sopphianatalia-debug/epi-vision-porto-itaqui`, commit
+`ef88e1920bbed4feb0b0899d99eacdd184d35899`. O código externo não foi copiado
+para a aplicação nem executado nesta auditoria.
+
+[cols="1,3",options="header"]
+|===
+|Frente |Fontes principais examinadas
+|Spring Boot |Entidades Trabalhador/Capacitacao, controllers, DTOs, services, repositories, TempoConfig, application.properties, pom.xml e testes Java.
+|FastAPI |main.py, vision_detector.py, test_main.py, requirements.txt e registro histórico de inferência.
+|React/Vite |package.json, vite.config.ts, parser de análise, modelo de operações e testes Playwright.
+|Sophia |Modelos, schemas, rotas e repositórios de Identity, Tracker, PPE, Fusion, Rules, Incident, Alerts; ponte Spring, builder de observações, executor e testes. Identificado também epi_compliance.
+|Documentação |README, contrato-ia-backend, plano, rastreabilidade e evidências históricas.
+|===
+
+=== Implementação versus comprovação
+
+[cols="2,2,3",options="header"]
+|===
+|Item |Estado |Limite
+|Java administrativo |Implementado; evidência histórica de 20 testes aprovados |H2 em memória; sem autenticação; não comprova instalação limpa.
+|FastAPI v0.3.0 |Implementado; evidência histórica de 17 testes aprovados |Testes unitários usam mocks do detector.
+|Inferência real por HTTP |Evidência histórica: HTTP 200, uma pessoa, confiança 0.8246 |Uma imagem; não mede acurácia, recall ou desempenho de produção.
+|Janela OpenCV com imagem |Evidência histórica: uma pessoa, confiança 0.8246 |Webcam não foi validada nesta conversa; não inferir FPS.
+|Frontend |Implementado; evidência histórica de build e 9 testes aprovados/1 ignorado |Respostas simuladas; smoke optativo ainda espera API 0.2.0.
+|Sincronização Sophia |Código candidato inspecionado |Testes externos usam Spring simulado; não comprovam nosso Spring real.
+|EPIs, rastreamento integrado, reconhecimento facial |Não verificados no Visão do Porto |Código ou documentação externos não equivalem a integração validada.
+|===
+
+Os números de testes vêm de `docs/VALIDACAO_CONSOLIDACAO_2026-11-17.md`.
+A evidência de imagem vem de
+`backend/fastapi/VALIDACAO_INFERENCIA_REAL_2026-11-17.md`. A duração HTTP histórica
+foi 7.794 s, incluindo o carregamento inicial dos pesos; não é benchmark.
+Os testes de aplicação não foram reexecutados nesta tarefa documental.
+
+=== Contradições históricas e precedência
+
+A proposta antiga de `Cliente -> Spring -> FastAPI` para transporte da imagem
+está superada pela decisão aprovada nesta revisão. O ADR-001 registra Java fora
+do caminho principal dos frames. Preservam-se os documentos antigos como histórico;
+para a direção arquitetural, usar esta revisão e o ADR.
+
+`Capacitacao` já existe e registra treinamento realizado por trabalhador.
+Separar catálogo de cursos e certificações é proposta futura, não pendência
+de criação de uma classe inexistente. SQL Server tem driver no pom.xml,
+mas a configuração ativa é H2; não há requisito confirmado para SQL Server.

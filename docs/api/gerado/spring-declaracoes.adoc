@@ -1,0 +1,35 @@
+// Gerado a partir dos records DTO; helpers e imports omitidos.
+[source,java]
+----
+public record TrabalhadorRequest(
+    @NotBlank @Size(max = 255) String nome,
+    @NotBlank @Size(max = 255) String matricula,
+    @NotBlank @Size(max = 255) String empresa
+) {}
+----
+
+[source,java]
+----
+public record CapacitacaoRequest(
+        @NotBlank @Pattern(regexp = "[A-Z0-9_-]{1,64}") String codigo,
+        @NotBlank @Size(max = 150) String nome,
+        @NotNull LocalDate realizadaEm,
+        @NotNull LocalDate validaAte,
+        @NotNull Boolean verificada,
+        @NotBlank @Size(max = 200) String fonte,
+        @Size(max = 100) String verificadaPor) {}
+----
+
+[source,java]
+----
+public record CapacitacaoResponse(UUID id, UUID trabalhadorId, String codigo, String nome,
+        LocalDate realizadaEm, LocalDate validaAte, boolean verificada, String fonte,
+        String verificadaPor, Instant registradaEm) {}
+----
+
+[source,java]
+----
+public record ConsultaCapacitacaoResponse(UUID trabalhadorId, String codigo,
+        LocalDate dataReferencia, String fuso, String situacao,
+        String autorizacaoAcesso, List<CapacitacaoResponse> registros) {}
+----
