@@ -9,8 +9,8 @@ A base é `65c5f23b3b18f5e7e7e01a5f22c666714914194f`, na branch `experiment/inte
 | Requisito | Estado | Entrega e verificação |
 | --- | --- | --- |
 | Cadastro com matrícula, setor e cargo | **Implementado e testado** | Campos opcionais, limite de 255 caracteres, normalização e compatibilidade com o cadastro anterior. JAR real via HTTP e suíte Java com 23 testes. |
-| Análise de imagem no React existente | **Implementado e testado** | Proxy local para a Vision API em 8100, com configuração substituível. Build TypeScript/Vite e 10 testes Playwright com smoke real habilitado. |
-| Resposta vazia e estados de falha | **Implementado e testado** | Inferência real em PNG sintético com resultado vazio. QA verificou PNG corrompido, indisponibilidade real e prazo do cliente com atraso simulado. |
+| Análise de imagem no React existente | **Implementado e testado** | Proxy local para a Vision API em 8100, com configuração substituível. Build TypeScript/Vite e 11 testes Playwright com smoke real habilitado. |
+| Resposta vazia e estados de falha | **Implementado e testado** | Inferência real em PNG sintético com resultado vazio. QA verificou PNG corrompido, indisponibilidade real e prazo do cliente antes dos cabeçalhos com atraso simulado e depois dos cabeçalhos com resposta HTTP parcial real em loopback. |
 | Contrato de sincronização por matrícula | **Implementado, mas não validado na integração** | O produtor Spring foi validado. O consumidor Identity foi avaliado estaticamente. Nenhuma sincronização real foi confirmada. |
 | Fila e revisão com justificativa | **Simulado** | O frontend conserva a demonstração e guarda a revisão no navegador. A persistência de revisão no servidor **não foi implementada**. |
 | EPI, ocorrência, regra e feed real | **Bloqueado** | Faltam checkpoint autorizado, perfil sem biometria e contrato de evento por câmera/track. Os módulos inspecionados não foram executados. |

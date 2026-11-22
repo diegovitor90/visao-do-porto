@@ -9,7 +9,7 @@ A branch experimental parte de `65c5f23b3b18f5e7e7e01a5f22c666714914194f`. Codex
 | Spring Boot | Em `backend/backend-springboot`, executar `./mvnw clean verify` com JDK 21 e a CA do ambiente quando necessária. **23 testes aprovados**. A suíte verifica persistência dos novos campos, nulos para cadastros legados, normalização e limites. |
 | API Spring real | JAR em loopback. `POST /api/trabalhadores` devolveu HTTP 201 e `GET /api/trabalhadores` devolveu HTTP 200 com os campos persistidos para a matrícula fictícia. A prova valida o produtor. O consumidor Identity não participou. |
 | FastAPI | Em `backend/fastapi`, `python -m pip check` e `python -m pytest -q`. **17 testes aprovados**. A suíte usa dublê de detector nos casos de análise. Há aviso de depreciação do TestClient. |
-| Frontend | Em `frontend`, `npm ci`, `npm run build` e `npm test`. Com Vision API em 8100 e `VISION_API_SMOKE_IMAGE` apontando ao PNG sintético, **10 testes aprovados** na worktree de construção. |
+| Frontend | Em `frontend`, `npm ci`, `npm run build` e `npm test`. Com Vision API em 8100 e `VISION_API_SMOKE_IMAGE` apontando ao PNG sintético, **11 testes aprovados**, incluindo regressão de abortamento na leitura do corpo da resposta. |
 | YOLO11n real | HTTP 200, `COMPLETED`, `inference_performed=true` e zero detecções. O navegador verifica a resposta e a renderização do resultado. Ver [avaliação de IA](AVALIACAO-IA.md) para hash e tempos da prova separada. |
 | Integridade de escopo | `git diff --check` e comparação byte a byte do ADR-001 com a versão aprovada. A prova não envolve a branch `main`, os serviços da Sophia ou o CredenciaOS. |
 
@@ -20,6 +20,12 @@ A branch experimental parte de `65c5f23b3b18f5e7e7e01a5f22c666714914194f`. Codex
 3. Em `frontend`, execute `VISION_API_SMOKE_IMAGE=/caminho/absoluto/sintetico.png npm test`. Se usar Chromium do sistema, defina `PLAYWRIGHT_CHROMIUM_EXECUTABLE` com o caminho do executável. A aplicação usa 30 s de prazo na análise. O teste usa uma imagem pequena e mede um único fluxo, sem carga concorrente.
 
 A fila de ocorrências e a revisão local usam dados demonstrativos. A imagem sintética comprova o caminho de inferência vazio. A precisão de detecção, a cadeia de EPI e a persistência após reinício têm gates próprios.
+
+## Commits de código
+
+- `7740fc3` — contrato administrativo e testes Java.
+- `00f915c` — porta e smoke da Vision v0.3.
+- `b0e6c48` — mensagem de timeout durante leitura do corpo e regressão automatizada.
 
 ## Verificações complementares
 
