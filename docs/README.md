@@ -32,6 +32,7 @@ O HTML incorpora os diagramas; as fontes continuam sendo AsciiDoc e PlantUML.
 - [Contrato da API e planejamento histórico](contrato-ia-backend.md).
 - [Consolidação de 17/11](VALIDACAO_CONSOLIDACAO_2026-11-17.md).
 - [Inferência real anterior](../backend/fastapi/VALIDACAO_INFERENCIA_REAL_2026-11-17.md).
+- [Fluxo real no navegador, 19/11](VALIDACAO_FLUXO_NAVEGADOR_2026-11-19.md).
 - [Plano MVP](PLANO_MVP.md) e [rastreabilidade](RASTREABILIDADE.md).
 
 Implementado, testado historicamente, proposto e não verificado são estados
