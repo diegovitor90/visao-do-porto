@@ -11,8 +11,8 @@ Os contratos da Sophia abaixo foram inspecionados por leitura estática do ZIP. 
 | Componente | Porta | Responsabilidade e interface | Estado |
 | --- | --- | --- | --- |
 | Spring Boot | 8080 | `GET /api/trabalhadores` e rotas administrativas de trabalhadores e capacitações | H2 em memória |
-| Vision API v0.3 | 8000 atual, 8100 proposto para coexistência | `POST /api/v1/vision/analyze` com JPEG/PNG multipart, saída tipada de detecção de pessoa | YOLO11n local |
-| React/Vite | 5173 | Interface oficial. Proxy de desenvolvimento usa `VISION_API_TARGET` para análise de fotos | Painel demonstrativo e revisão local na base da sprint |
+| Vision API v0.3 | 8100 no piloto, 8000 na base | `POST /api/v1/vision/analyze` com JPEG/PNG multipart, saída tipada de detecção de pessoa | YOLO11n local |
+| React/Vite | 5173 | Interface oficial. Proxy de desenvolvimento usa `VISION_API_TARGET` para análise de fotos | Painel demonstrativo e revisão local |
 | `epi_ppe` | 8000 | `POST /detect` e `POST /pipeline/process-frame`. Detecta, rastreia e associa EPIs a pessoas | Provider mock por padrão. O provider YOLO depende dos pesos ajustados |
 | `epi_identity` | 8001 | `GET/POST /employees` e `PUT /employees/{id}`, com JWT/RBAC. Possui rotas de biometria montadas na mesma aplicação | SQLite por padrão. A execução requer um perfil estritamente administrativo |
 | `epi_fusion` | 8002 | `POST /fusion/observations`, consultas por câmera, estado e observações anônimas. Consolida observações e condições de visibilidade | Estado temporal de processo, com expiração |
