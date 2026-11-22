@@ -35,14 +35,18 @@ export function parseAnalysis(data: unknown): Analysis {
 export async function analyzeImage(file: File, signal: AbortSignal): Promise<Analysis> {
   const form = new FormData()
   form.set('file', file)
+  const timeoutMessage = 'A análise não respondeu a tempo.'
   let response: Response
   try {
     response = await fetch('/api/v1/vision/analyze', { method: 'POST', body: form, signal })
   } catch {
-    if (signal.aborted) throw new Error('A análise não respondeu a tempo.')
+    if (signal.aborted) throw new Error(timeoutMessage)
     throw new Error('Não foi possível conectar à Vision API. Confira se o FastAPI está rodando.')
   }
-  const data: unknown = await response.json().catch(() => null)
+  const data: unknown = await response.json().catch(() => {
+    if (signal.aborted) throw new Error(timeoutMessage)
+    return null
+  })
   if (!response.ok) {
     if (isObj(data) && typeof data.detail === 'string') throw new Error(data.detail)
     if (response.status >= 500) throw new Error('A Vision API está indisponível ou falhou durante a análise. Tente novamente.')

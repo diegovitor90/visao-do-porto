@@ -1,5 +1,5 @@
 import { expect, test, type Page } from '@playwright/test'
-import { parseAnalysis } from '../src/features/analysis/api'
+import { analyzeImage, parseAnalysis } from '../src/features/analysis/api'
 import { resolve } from 'node:path'
 
 const endpoint = '**/api/v1/vision/analyze'
@@ -97,6 +97,25 @@ test('resposta inválida não é interpretada como detecção', () => {
   expect(() => parseAnalysis({ ...hit, width: 0 })).toThrow('Resposta inesperada')
   expect(() => parseAnalysis({ ...validated, detections: hit.detections })).toThrow('Resposta inesperada')
   expect(() => parseAnalysis({ ...hit, detections: [{ ...hit.detections[0], bbox: { ...hit.detections[0].bbox, x2: 4 } }] })).toThrow('Resposta inesperada')
+})
+
+test('timeout ao ler o corpo da resposta é exibido como timeout', async () => {
+  const controller = new AbortController()
+  const originalFetch = globalThis.fetch
+  globalThis.fetch = async () => new Response(new ReadableStream({
+    start(body) {
+      controller.signal.addEventListener('abort', () => body.error(controller.signal.reason), { once: true })
+    },
+    pull() {
+      controller.abort()
+    },
+  }, { highWaterMark: 0 }), { headers: { 'Content-Type': 'application/json' } })
+  try {
+    await expect(analyzeImage(new File([png], 'quadro.png', { type: 'image/png' }), controller.signal))
+      .rejects.toThrow('A análise não respondeu a tempo.')
+  } finally {
+    globalThis.fetch = originalFetch
+  }
 })
 
 test('painel funciona em 390 px sem rolagem horizontal', async ({ page }) => {
