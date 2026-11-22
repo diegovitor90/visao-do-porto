@@ -12,6 +12,8 @@ import org.springframework.test.web.servlet.setup.MockMvcBuilders;
 import org.springframework.web.context.WebApplicationContext;
 import br.com.visaodoporto.backend.repository.*;
 import tools.jackson.databind.json.JsonMapper;
+import static org.hamcrest.Matchers.hasItem;
+import static org.hamcrest.Matchers.nullValue;
 import static org.junit.jupiter.api.Assertions.*;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.*;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.*;
@@ -110,11 +112,65 @@ class CapacitacaoApiTest {
 
     @Test void preservaCadastroERejeicaoDeMatriculaDuplicada() throws Exception {
         mvc.perform(get("/api/trabalhadores/" + id)).andExpect(status().isOk())
-                .andExpect(jsonPath("$.matricula").value("COL-023"));
+                .andExpect(jsonPath("$.matricula").value("COL-023"))
+                .andExpect(jsonPath("$.setor").value(nullValue()))
+                .andExpect(jsonPath("$.cargo").value(nullValue()));
         mvc.perform(post("/api/trabalhadores").contentType(MediaType.APPLICATION_JSON)
                 .content("{\"nome\":\"Teste\",\"matricula\":\"COL-023\",\"empresa\":\"Demo\"}"))
                 .andExpect(status().isBadRequest());
         mvc.perform(post("/api/trabalhadores").contentType(MediaType.APPLICATION_JSON).content("{}"))
                 .andExpect(status().isBadRequest());
+    }
+
+    @Test void persisteSetorECargoEExpoeContratoDeListagem() throws Exception {
+        String corpo = """
+            {"nome":"Pessoa sintética","matricula":"DEMO-SETOR","empresa":"Empresa fictícia",
+             "setor":"  GRANEIS_SOLIDOS  ","cargo":"  Operador de teste  "}
+            """;
+        String resposta = mvc.perform(post("/api/trabalhadores")
+                .contentType(MediaType.APPLICATION_JSON).content(corpo))
+                .andExpect(status().isCreated())
+                .andExpect(jsonPath("$.setor").value("GRANEIS_SOLIDOS"))
+                .andExpect(jsonPath("$.cargo").value("Operador de teste"))
+                .andReturn().getResponse().getContentAsString();
+        String novoId = JsonMapper.builder().build().readTree(resposta).get("id").asText();
+
+        mvc.perform(get("/api/trabalhadores/" + novoId))
+                .andExpect(status().isOk())
+                .andExpect(jsonPath("$.setor").value("GRANEIS_SOLIDOS"))
+                .andExpect(jsonPath("$.cargo").value("Operador de teste"));
+        String item = "$[?(@.matricula == 'DEMO-SETOR')]";
+        mvc.perform(get("/api/trabalhadores"))
+                .andExpect(status().isOk())
+                .andExpect(jsonPath(item + ".id", hasItem(novoId)))
+                .andExpect(jsonPath(item + ".nome", hasItem("Pessoa sintética")))
+                .andExpect(jsonPath(item + ".empresa", hasItem("Empresa fictícia")))
+                .andExpect(jsonPath(item + ".ativo", hasItem(true)))
+                .andExpect(jsonPath(item + ".setor", hasItem("GRANEIS_SOLIDOS")))
+                .andExpect(jsonPath(item + ".cargo", hasItem("Operador de teste")));
+    }
+
+    @Test void camposOpcionaisEmBrancoOuNulosSaoAceitos() throws Exception {
+        String corpo = """
+            {"nome":"Pessoa sintética","matricula":"DEMO-OPCIONAL","empresa":"Empresa fictícia",
+             "setor":"   ","cargo":null}
+            """;
+        mvc.perform(post("/api/trabalhadores").contentType(MediaType.APPLICATION_JSON).content(corpo))
+                .andExpect(status().isCreated())
+                .andExpect(jsonPath("$.setor").value(nullValue()))
+                .andExpect(jsonPath("$.cargo").value(nullValue()));
+    }
+
+    @Test void camposOpcionaisAcimaDoLimiteSaoRejeitadosAntesDaGravacao() throws Exception {
+        String formato = """
+            {"nome":"Pessoa sintética","matricula":"DEMO-LONGA","empresa":"Empresa fictícia",
+             "%s":"%s"}
+            """;
+        for (String campo : new String[]{"setor", "cargo"}) {
+            mvc.perform(post("/api/trabalhadores").contentType(MediaType.APPLICATION_JSON)
+                    .content(formato.formatted(campo, "x".repeat(256))))
+                    .andExpect(status().isBadRequest());
+        }
+        assertFalse(trabalhadores.existsByMatricula("DEMO-LONGA"));
     }
 }

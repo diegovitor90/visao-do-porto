@@ -27,6 +27,10 @@ public class Trabalhador {
     @Column(nullable = false)
     private String empresa;
 
+    private String setor;
+
+    private String cargo;
+
     @Column(nullable = false)
     private boolean ativo = true;
 
@@ -37,10 +41,20 @@ public class Trabalhador {
             String nome,
             String matricula,
             String empresa) {
+        this(nome, matricula, empresa, null, null);
+    }
 
+    public Trabalhador(
+            String nome,
+            String matricula,
+            String empresa,
+            String setor,
+            String cargo) {
         this.nome = nome;
         this.matricula = matricula;
         this.empresa = empresa;
+        this.setor = setor;
+        this.cargo = cargo;
     }
 
     public UUID getId() {
@@ -57,6 +71,14 @@ public class Trabalhador {
 
     public String getEmpresa() {
         return empresa;
+    }
+
+    public String getSetor() {
+        return setor;
+    }
+
+    public String getCargo() {
+        return cargo;
     }
 
     public boolean isAtivo() {

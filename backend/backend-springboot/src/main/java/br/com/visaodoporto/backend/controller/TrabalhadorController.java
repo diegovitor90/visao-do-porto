@@ -38,7 +38,9 @@ public class TrabalhadorController {
             return service.cadastrar(
                 request.nome(),
                 request.matricula(),
-                request.empresa()
+                request.empresa(),
+                request.setor(),
+                request.cargo()
             );
         } catch (IllegalArgumentException ex) {
             throw new ResponseStatusException(
