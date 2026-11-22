@@ -12,10 +12,13 @@ A revisão QA conferiu o cadastro administrativo em `d19d3f7` e o frontend integ
 | Timeout do cliente | Um interceptador Playwright manteve uma resposta simulada pendente e o relógio virtual avançou 30 s. A interface exibiu “A análise não respondeu a tempo” e nenhuma caixa. |
 | Fluxo demonstrativo | A suíte verifica que o exemplo não dispara POST, a fila filtrada mostra estado vazio e uma revisão sem justificativa é rejeitada. A decisão de evidência insuficiente reaparece no histórico após recarregar o navegador, via armazenamento local. |
 
+## Regressão de timeout na leitura do corpo
+
+Na revisão inicial, um servidor HTTP local enviou status `200` e iniciou o JSON sem concluir a resposta. Com o Chromium e o proxy Vite reais, o relógio virtual avançou 30 s e a interface exibiu a mensagem genérica de contrato. O mesmo cenário, repetido de forma independente após a correção em `analyzeImage`, exibiu “A análise não respondeu a tempo” e manteve zero caixas de detecção. A resposta parcial veio do servidor de teste. O relógio acelerado evitou uma espera real de 30 s.
+
 ## Limites observados
 
 - A aplicação aborta o upload em **30 s**. Os **45 s** da espera Playwright permitem aguardar o evento de resposta e não estendem o prazo do cliente. Para validar capacidade, medir latência concorrente e cold starts em execução separada.
-- O teste de timeout cobre a espera anterior aos cabeçalhos HTTP. Uma resposta iniciada que atrase o corpo pode aparecer como erro genérico de contrato, pois a leitura de JSON suprime a exceção de abortamento. Vale uma regressão específica quando o contrato de timeout for ampliado.
 - Novos campos são opcionais no contrato HTTP. A sincronização de setor com a taxonomia de Identity, concorrência de matrículas, deduplicação de eventos, permissões por função, recuperação dos serviços operacionais e persistência de revisão ainda exigem provas próprias.
 - A integração real validada neste recorte é **frontend → Vite → FastAPI → YOLO11n**. A porta da API de análise é 8100. A prova administrativa HTTP é independente e nenhum upload passa pelo Spring.
 
