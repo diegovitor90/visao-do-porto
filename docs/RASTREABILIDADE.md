@@ -10,13 +10,14 @@ estado completo atual nem aceite de funcionalidades futuras.
 
 | Componente | Implementado e evidência | Ainda pendente |
 | --- | --- | --- |
-| Spring Boot 4.1.2 | Trabalhadores, capacitações e validade; 20 testes no diagnóstico | Integração HTTP com IA; autenticação; vínculo com detecção |
+| Spring Boot 4.1.2 | Trabalhadores, capacitações e validade; 20 testes no diagnóstico | Sincronização administrativa; autenticação; vínculo manual com ocorrências |
 | FastAPI v0.3.0 | Upload validado, inferência YOLO11n em CPU e JSON tipado; 17 testes no diagnóstico | Rastreamento, EPIs, regras e avaliação ampla |
-| Frontend 0.1.1 | Painel demonstrativo, upload, caixas, filtros e revisão local; build e 9 testes no diagnóstico | Persistência administrativa e integração via Spring |
+| Frontend 0.1.1 | Painel demonstrativo, upload, caixas, filtros e revisão local; build e 9 testes no diagnóstico | Persistência de revisão e integração com APIs operacionais |
 
 Fluxo atual: frontend → proxy Vite → FastAPI → YOLO11n. Spring Boot continua como
-API administrativa separada. Fluxo-alvo pendente: frontend → Spring Boot → FastAPI
-→ YOLO11n → Spring Boot → frontend. Consolidar repositório não conclui a integração.
+API administrativa separada. O [ADR-001](arquitetura/adrs/ADR-001.adoc) mantém
+os frames no pipeline Python. A integração pendente inclui leitura administrativa
+por matrícula e consumo de ocorrências operacionais pelo frontend.
 
 EPIs, zonas operacionais, ByteTrack, vínculo de identidade, alertas reais,
 autorização de acesso e validação portuária permanecem planejados. Mapas e alertas

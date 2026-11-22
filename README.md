@@ -14,7 +14,7 @@ prevista para **18/11/2026**. Não há validação operacional em ambiente portu
 | Frontend 0.1.1 | Painel demonstrativo, upload, caixas de detecção, filtros e revisão local | Alertas/mapa ilustrativos; revisão no navegador; sem persistência no servidor |
 | Testes | Java, Python e navegador; build TypeScript/Vite | Testes isolados não comprovam integração completa |
 
-**Pendente:** integração Spring Boot–FastAPI, vínculo administrativo com detecções,
+**Pendente:** sincronização administrativa com Identity, vínculo manual com ocorrências,
 pipeline operacional de vídeo, EPIs, zonas/regras reais, alertas produzidos pela IA,
 autenticação, auditoria de servidor e avaliação de desempenho/precisão.
 
@@ -30,11 +30,13 @@ Cliente administrativo → Spring Boot → JPA / H2
 Arquitetura-alvo, **ainda não implementada**:
 
 ```text
-Cliente/Frontend → Spring Boot → FastAPI → YOLO11n → Spring Boot → Cliente
+Câmera → Python (detecção, rastreamento e regras) → ocorrências → Frontend
+Spring Boot → sincronização administrativa → Identity
 ```
 
-A consolidação na `main` não implementa essa comunicação. A API real e a proposta
-futura estão distinguidas no [contrato único](docs/contrato-ia-backend.md).
+O [ADR-001](docs/arquitetura/adrs/ADR-001.adoc) define o Spring Boot como núcleo
+administrativo e mantém os frames no fluxo de visão. O
+[contrato vigente](docs/contrato-ia-backend.md) detalha a análise de imagens.
 
 ## Executar o Spring Boot
 
@@ -79,7 +81,7 @@ Com o ambiente e os pesos locais disponíveis:
 ```powershell
 cd backend/fastapi
 .\.venv\Scripts\python.exe -B -m pytest test_main.py -q -p no:cacheprovider
-.\.venv\Scripts\python.exe -m uvicorn main:app --host 127.0.0.1 --port 8000
+.\.venv\Scripts\python.exe -m uvicorn main:app --host 127.0.0.1 --port 8100
 ```
 
 Se o terminal já estiver nessa pasta, não repetir o `cd`. Consultar `/api/health`,
@@ -90,7 +92,7 @@ Análise: `POST /api/v1/vision/analyze`, multipart com campo `file`, JPEG ou PNG
 até 5 MiB e 20 megapixels. Exemplo em outro terminal:
 
 ```powershell
-curl.exe -F "file=@C:/caminho/imagem-autorizada.png;type=image/png" http://127.0.0.1:8000/api/v1/vision/analyze
+curl.exe -F "file=@C:/caminho/imagem-autorizada.png;type=image/png" http://127.0.0.1:8100/api/v1/vision/analyze
 ```
 
 ### Pesos e reprodução da inferência
@@ -127,7 +129,7 @@ npm run dev
 ```
 
 Em ambiente novo, executar `npm ci` com autorização para baixar as dependências.
-Abrir `http://127.0.0.1:5173`. O proxy usa a FastAPI em `127.0.0.1:8000`;
+Abrir `http://127.0.0.1:5173`. O proxy usa a FastAPI em `127.0.0.1:8100`;
 `frontend/.env.example` documenta a variável `VISION_API_TARGET`.
 O proxy Vite não acompanha o build de produção. [Detalhes e testes](frontend/README.md).
 

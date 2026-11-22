@@ -78,12 +78,10 @@ Hoje o frontend chama a FastAPI pelo proxy Vite. Seu parser utiliza os campos de
 imagem/detecções, mas descarta `model`; os fixtures antigos usam `ANALYZED`, sem
 restringir `status`. Esses limites não alteram a resposta real `COMPLETED`.
 
-Ainda não há controller, DTO nem cliente HTTP de visão no Spring Boot.
-O fluxo-alvo é Cliente → Spring Boot → FastAPI → YOLO11n → Spring Boot → Cliente.
-Próxima implementação mínima: receber multipart, encaminhar `file`, desserializar
-os mesmos campos, configurar URL/timeouts e tratar erros de validação, falha HTTP,
-indisponibilidade e timeout. Testar com MockMvc e servidor HTTP simulado, sem YOLO
-em cada teste Java. Não criar contrato de sucesso concorrente.
+O [ADR-001](arquitetura/adrs/ADR-001.adoc) mantém o upload e os frames no fluxo
+de visão. O Spring Boot expõe dados administrativos por matrícula. A integração
+operacional deverá trocar metadados com contratos próprios para origem, falhas,
+repetição e atualização. A Vision API v0.3.0 mantém os endpoints e formatos acima.
 
 ## Diferenças em relação à proposta de 13/11
 
