@@ -109,9 +109,30 @@ test('painel funciona em 390 px sem rolagem horizontal', async ({ page }) => {
 })
 
 test('envia um PNG real para a FastAPI quando o teste de integração é habilitado', async ({ page }) => {
-  test.skip(!process.env.VISION_API_SMOKE_IMAGE, 'Requer FastAPI v0.2.0 e VISION_API_SMOKE_IMAGE')
+  const imagePath = process.env.VISION_API_SMOKE_IMAGE
+  test.skip(!imagePath, 'Requer FastAPI v0.3.0, pesos locais e VISION_API_SMOKE_IMAGE')
+  if (!imagePath) return
+  test.setTimeout(60_000)
+
   await page.goto('/#analisar')
-  await page.getByLabel('Selecionar imagem').setInputFiles(resolve(process.env.VISION_API_SMOKE_IMAGE!))
-  await page.getByRole('button', { name: 'Enviar para análise' }).click()
-  await expect(page.getByText('Imagem validada. A API ainda não executou inferência.')).toBeVisible()
+  await page.getByLabel('Selecionar imagem').setInputFiles(resolve(imagePath))
+  const [response] = await Promise.all([
+    page.waitForResponse(
+      response => new URL(response.url()).pathname === '/api/v1/vision/analyze'
+        && response.request().method() === 'POST',
+      { timeout: 45_000 },
+    ),
+    page.getByRole('button', { name: 'Enviar para análise' }).click(),
+  ])
+
+  expect(response.status()).toBe(200)
+  const payload = await response.json()
+  expect(payload).toMatchObject({ status: 'COMPLETED', inference_performed: true, model: 'yolo11n' })
+  const result = parseAnalysis(payload)
+  const count = result.detections.length
+  const summary = count === 0
+    ? 'Análise concluída. Nenhuma pessoa detectada.'
+    : `Análise concluída. ${count} ${count === 1 ? 'detecção' : 'detecções'}.`
+  await expect(page.getByText(summary, { exact: true })).toBeVisible()
+  await expect(page.locator('.detect-box')).toHaveCount(count)
 })

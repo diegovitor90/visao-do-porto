@@ -7,7 +7,7 @@ export default defineConfig(({ mode }) => {
       host: '127.0.0.1',
       strictPort: true,
       proxy: {
-        '/api/v1/vision': { target: env.VISION_API_TARGET || 'http://127.0.0.1:8000', changeOrigin: true },
+        '/api/v1/vision': { target: env.VISION_API_TARGET || 'http://127.0.0.1:8100', changeOrigin: true },
       },
     },
   }

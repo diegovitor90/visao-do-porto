@@ -23,11 +23,11 @@ Em outro terminal, a partir da raiz do repositório:
 
 ```powershell
 cd backend/fastapi
-.\.venv\Scripts\python.exe -m uvicorn main:app --host 127.0.0.1 --port 8000
+.\.venv\Scripts\python.exe -m uvicorn main:app --host 127.0.0.1 --port 8100
 ```
 
 O ambiente Python e os pesos devem estar preparados conforme o [README principal](../README.md).
-O Vite encaminha `/api/v1/vision/*` diretamente para `http://127.0.0.1:8000`.
+O Vite encaminha `/api/v1/vision/*` diretamente para `http://127.0.0.1:8100`.
 Para outro destino, copiar `.env.example` para `.env.local`, ajustar
 `VISION_API_TARGET` e reiniciar o Vite. O upload é multipart, campo `file`.
 Esse proxy de desenvolvimento não é incluído no build de produção.
@@ -39,8 +39,8 @@ renderiza caixas e confiança e também suporta respostas antigas sem inferênci
 O tipo/parser atual não preserva `model` e não restringe `status`; esse alinhamento
 fica pendente. O [contrato único](../docs/contrato-ia-backend.md) registra os campos reais.
 
-O frontend ainda não passa pelo Spring Boot. A integração-alvo é frontend → Spring
-Boot → FastAPI → YOLO11n → Spring Boot → frontend e ainda será implementada.
+O upload de imagens continua no fluxo Vite → FastAPI → YOLO11n. O Spring Boot
+mantém as responsabilidades administrativas definidas pelo ADR-001.
 
 ## Exemplo, revisão e estrutura
 
@@ -69,10 +69,17 @@ autorização para download. Não executar outro Vite na porta 5173 durante a su
 O diagnóstico de 17/11 aprovou nove testes e ignorou um teste optativo; a
 [validação da consolidação](../docs/VALIDACAO_CONSOLIDACAO_2026-11-17.md) registra a reexecução.
 
-Os fixtures de inferência usam `ANALYZED` e não incluem `model`. O teste optativo
-habilitado por `VISION_API_SMOKE_IMAGE` ainda espera a v0.2.0, sem inferência;
-não habilitá-lo para alegar teste da v0.3.0. Ele precisa ser atualizado em uma
-próxima etapa. A suíte padrão verifica respostas simuladas, não YOLO real.
+A suíte padrão verifica respostas simuladas. Para executar o teste de integração
+real, inicie a FastAPI v0.3.0 com o peso YOLO11n local e aponte
+`VISION_API_SMOKE_IMAGE` para um PNG sintético ou autorizado.
+
+```powershell
+$env:VISION_API_SMOKE_IMAGE = 'C:\caminho\sintetico.png'
+npm test
+```
+
+O teste verifica a resposta HTTP, a execução da inferência e o resultado na tela.
+Uma imagem sintética vazia valida o caso sem detecções e o transporte pelo proxy.
 
 ## Limites e publicação
 
@@ -83,5 +90,5 @@ Os ativos SVG são locais; a fotografia usada na validação Python não é dist
 
 O frontend 0.1.1 acompanha o backend e a documentação na `main`. Preservar o
 `package-lock.json`; excluir `node_modules`, `dist`, relatórios e `.env.local`.
-Em produção será necessário configurar o encaminhamento HTTP no servidor; o
-destino final deverá acompanhar a futura integração via Spring Boot.
+Em produção será necessário configurar o encaminhamento HTTP da interface
+para a API de visão conforme o ADR-001.
