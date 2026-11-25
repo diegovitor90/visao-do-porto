@@ -265,3 +265,24 @@ service-account*.json
 *.sqlite
 *.sqlite3
 *.db
+
+# Dados gerados pela visão computacional
+evidencias/
+eventos_locais.jsonl
+zonas_cache/
+avaliacao_saida/
+*.sqlite-wal
+*.sqlite-shm
+*.sqlite-journal
+*.sqlite3-wal
+*.sqlite3-shm
+*.sqlite3-journal
+*.db-wal
+*.db-shm
+*.db-journal
+*.mp4
+*.avi
+*.mov
+*.mkv
+*.webm
+/Microsoft/Windows/PowerShell/ModuleAnalysisCache

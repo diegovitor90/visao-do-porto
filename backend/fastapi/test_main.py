@@ -1,8 +1,20 @@
 
 from io import BytesIO
+from pathlib import Path
+import subprocess
+import sys
 from types import SimpleNamespace
 from unittest.mock import Mock
 import threading
+
+
+def test_importacao_do_pacote_a_partir_da_raiz():
+    result = subprocess.run(
+        [sys.executable, "-c", "from backend.fastapi.main import app; print(app.version)"],
+        cwd=Path(__file__).resolve().parents[2], capture_output=True, text=True, timeout=15,
+    )
+    assert result.returncode == 0, result.stderr
+    assert result.stdout.strip() == "0.3.0"
 
 import pytest
 import main

@@ -1,153 +1,184 @@
-# Contrato IA–backend: API real e evolução planejada
+# Contrato IA–backend
 
-Revisão: **17/11/2026**. Este é o documento único de referência. A primeira seção
-descreve a FastAPI local **v0.3.0**; a proposta histórica ao final é planejamento e
-não deve ser usada como payload do endpoint de análise.
+Referência do piloto local em 24/11/2026. FastAPI infere, processa fontes
+e publica eventos. Spring Boot mantém zonas e regras, recebe eventos e registra
+a revisão. Payloads de visão usam snake_case e datas ISO-8601. APIs
+administrativas usam camelCase.
 
-## Contrato implementado — análise de imagem
+## Análise de imagens
 
-Fonte: `backend/fastapi/main.py`, modelos Pydantic `ImageAnalysisResponse`,
-`Detection` e `BoundingBox`; detector em `vision_detector.py`.
-
-```http
-POST /api/v1/vision/analyze
-Content-Type: multipart/form-data; boundary=...
-```
-
-Parte obrigatória `file`, com nome do arquivo e `Content-Type` `image/jpeg` ou
-`image/png`. Limites: 5.242.880 bytes e 20.000.000 pixels. O conteúdo deve ser JPEG
-ou PNG íntegro, verificado pelo Pillow. Não enviar JSON/base64 nesse endpoint.
-
-Resposta HTTP 200, exemplo da validação real histórica:
+FastAPI (`127.0.0.1:8000`) e Spring (`127.0.0.1:8080`) expõem
+`POST /api/v1/vision/analyze` e `POST /api/v1/vision/analyze/ppe`. Envie
+multipart com o campo `file` e MIME `image/jpeg` ou `image/png`.
+O limite é 5 MiB, com até 20 milhões de pixels. O Spring aceita requisições
+multipart de até 6 MiB e encaminha o nome e o MIME da parte.
 
 ```json
 {
-  "filename": "teste_pessoas.png",
-  "width": 767,
-  "height": 766,
+  "filename": "imagem.png",
+  "width": 640,
+  "height": 480,
   "status": "COMPLETED",
   "inference_performed": true,
   "model": "yolo11n",
   "detections": [
-    {
-      "class_id": 0,
-      "class_name": "person",
-      "confidence": 0.8246,
-      "bbox": {"x1": 37.02, "y1": 34.14, "x2": 731.36, "y2": 751.73}
-    }
+    {"class_id": 0, "class_name": "person", "confidence": 0.8246,
+     "bbox": {"x1": 37.02, "y1": 34.14, "x2": 320.36, "y2": 451.73}}
   ],
   "message": "Análise de imagem concluída."
 }
 ```
 
-| Campo | Tipo | Semântica atual |
-| --- | --- | --- |
-| `filename` | string | Nome recebido; fallback `sem_nome` |
-| `width`, `height` | inteiro | Dimensões da imagem original |
-| `status` | string | `COMPLETED` após inferência bem-sucedida |
-| `inference_performed` | boolean | `true` no sucesso da v0.3.0 |
-| `model` | string | `yolo11n` |
-| `detections` | lista | Pode ser vazia sem erro |
-| `message` | string | Mensagem de conclusão |
-| `detections[].class_id` | inteiro | `0`, classe pessoa |
-| `detections[].class_name` | string | `person` |
-| `detections[].confidence` | número | Confiança de detecção, arredondada a quatro casas |
-| `detections[].bbox` | objeto | `x1`, `y1`, `x2`, `y2` numéricos, em pixels, arredondados a duas casas |
-
-O detector usa CPU, limiar 0.40 e filtro `classes=[0]`. A inferência roda fora do
-event loop e os pesos são carregados sob demanda/cache. Os tipos dos schemas não
-impõem por si só todos os limites geométricos ou intervalo de confiança; não
-confundir comportamento do detector com validações Pydantic adicionais.
+Ambos retornam HTTP 200 e aceitam `detections: []`. Coordenadas são em pixels
+da imagem original. `/analyze` usa YOLO11n para pessoas com limiar 0,40.
+`/analyze/ppe` usa `best_epi_grupo_yolo26s.pt` com limiar 0,40. O modelo de EPI
+pode retornar `person`, `helmet`, `no_helmet`, `vest` e `no_vest`. Os nomes
+vêm de `model.names`. A análise de imagem informa detecções de um quadro.
 
 | HTTP | Causa |
 | --- | --- |
-| 413 | Arquivo acima de 5 MiB ou imagem acima de 20 MP |
-| 415 | MIME declarado ou formato real não suportado |
-| 422 | Imagem inválida/corrompida ou validação automática da entrada |
-| 503 | Detector/inferência indisponível ou falha na construção da resposta |
+| 413 | Limite de arquivo, requisição multipart ou dimensões excedido |
+| 415 | MIME ou formato fora dos tipos aceitos |
+| 422 | Imagem corrompida ou, no FastAPI, parâmetro obrigatório ausente |
+| 400 | Campo multipart ausente no Spring |
+| 503 | Inferência ou Vision API indisponível |
+| 504 | Timeout entre Spring e FastAPI |
+| 502 | Resposta inválida ou inesperada da Vision API |
 
-Os erros explícitos usam `{"detail":"mensagem"}`; validação automática pode
-retornar `detail` como lista. Ausência do campo `file` é erro de entrada.
+O FastAPI envia `detail` em falhas explícitas. O Spring devolve ProblemDetail
+e usa timeout de conexão de 2 s e leitura de 15 s. Os serviços expõem
+`GET /api/health` e `GET /api/v1/vision/status`. O status inclui `service`,
+`model`, `model_loaded`, `ppe_model_loaded`, `inference_available`, `status`,
+`message`, `sources` e `fps`. `READY` indica que a tentativa de inferência
+está disponível. Os campos `*_model_loaded` consultam os caches de modelos.
 
-Também implementados: `GET /api/health`, `GET /api/v1/vision/status` e OpenAPI em
-`/openapi.json`. O status `READY` não carrega o modelo nem garante inferência.
+## Proxy Vite e rótulos do frontend
 
-## Consumidores e integração pendente
+O `frontend/.env.example` sugere `VISION_API_TARGET=http://127.0.0.1:8080`
+para o Spring intermediar a Vision API. Use `http://127.0.0.1:8000` para falar
+diretamente com o FastAPI. Esse também é o padrão do Vite sem a variável.
+Reinicie o Vite ao trocar o alvo.
 
-Hoje o frontend chama a FastAPI pelo proxy Vite. Seu parser utiliza os campos de
-imagem/detecções, mas descarta `model`; os fixtures antigos usam `ANALYZED`, sem
-restringir `status`. Esses limites não alteram a resposta real `COMPLETED`.
+A tela de análise usa `POST /api/v1/vision/analyze`. Na lista de detecções
+e nas caixas do frontend, `vest` e `safety_vest` aparecem como **Colete**,
+`no_helmet` como **Sem capacete** e `no_vest` como **Sem colete**.
 
-Ainda não há controller, DTO nem cliente HTTP de visão no Spring Boot.
-O fluxo-alvo é Cliente → Spring Boot → FastAPI → YOLO11n → Spring Boot → Cliente.
-Próxima implementação mínima: receber multipart, encaminhar `file`, desserializar
-os mesmos campos, configurar URL/timeouts e tratar erros de validação, falha HTTP,
-indisponibilidade e timeout. Testar com MockMvc e servidor HTTP simulado, sem YOLO
-em cada teste Java. Não criar contrato de sucesso concorrente.
+Na validação da T16, os dois destinos devolveram HTTP 200 no status e nas
+rotas de imagem e EPI, com JSON equivalente para os mesmos arquivos. O
+JPEG inválido retornou 422 nos dois caminhos. Uma resposta controlada
+confirmou a exibição dos rótulos no navegador.
 
-## Diferenças em relação à proposta de 13/11
+## Zonas no Spring
 
-`frame_width/frame_height`, `person_confidence` e `bbox_xyxy` não são nomes da API
-real. Não há `track_id`, `zone_id`, câmera, sessão, observação, PPE ou identidade
-na análise v0.3.0. Não fabricar esses campos nem inferir vínculos administrativos.
+`GET /api/v1/cameras/{cameraId}/zonas` devolve a lista de zonas ativas, ou `[]`.
+`PUT` substitui a lista de forma atômica. Omita `zone_id` para criar e forneça
+o UUID para atualizar. Um item omitido é desativado.
 
-## Proposta histórica — não implementada
-
-O texto abaixo preserva a proposta de 13/11 como referência de evolução. Ele não
-é um segundo contrato ativo; sua implementação exigirá revisão e acordo futuros.
-
-### Observação visual e vínculo administrativo (rascunho de 13/11)
-
-13/11/2026. Rascunho para revisão entre Gustavo, Diego, Jason e Hugo. Este arquivo descreve a próxima integração; endpoints de observação e vínculo ainda não estão implementados.
-
-### Responsabilidades
-
-FastAPI produz observações de detecção/rastreamento. Spring Boot recebe observações e mantém cadastros, capacitações e decisões administrativas. O front-end apresenta a trajetória para confirmação manual pelo operador. Uma detecção não identifica civilmente a pessoa.
-
-### Mensagem candidata de observação
-
-```json
-{
-  "schema_version": "0.1",
-  "observation_id": "uuid-unico-da-observacao",
-  "source": "simulated",
-  "camera_id": "CAM-LAB-01",
-  "session_id": "uuid-da-sessao-de-captura",
-  "timestamp": "2026-11-13T15:00:00Z",
-  "frame_id": 120,
-  "frame_width": 1280,
-  "frame_height": 720,
-  "track_id": 17,
-  "bbox_xyxy": [100, 100, 250, 600],
-  "person_confidence": 0.93,
-  "quality": "adequate",
-  "ppe": {
-    "helmet": {"state": "detected", "confidence": 0.87},
-    "vest": {"state": "unknown", "confidence": null}
-  }
-}
-```
-
-| Campo/regra | Semântica a preservar |
+| Campo | Tipo |
 | --- | --- |
-| camera + session + track | Chave conjunta da trajetória; `track_id` sozinho não é único globalmente. |
-| session | Nova sessão a cada reinício/reconexão do rastreador; não reaproveitar vínculo antigo. |
-| observation_id | Identificador para deduplicação de reenvios. |
-| timestamp | Instante de captura com fuso; backend registra também recebimento. |
-| frame_id | Ordem crescente dentro da sessão. Definir tratamento de atraso, duplicação e descarte antes de integrar. |
-| bbox | Pixels no quadro de referência, x1 < x2 e y1 < y2, dentro da imagem. |
-| confidence | Valor entre 0 e 1; confiança de detecção não é confiança de identidade. |
-| PPE | `detected`, `not_detected` ou `unknown`. Não detectado não comprova ausência. |
-| source | `simulated` em testes; sinalizar claramente no painel. |
+| `zone_id` | UUID atribuído pelo Spring |
+| `nome` | Nome da zona |
+| `polygon` | Lista de 3 a 16 pares `[x,y]` normalizados |
+| `required_ppe` | Lista de `CAPACETE` e/ou `COLETE` |
+| `rule_type` | `EPI_OBRIGATORIO` ou `AREA_RESTRITA` |
+| `rule_id` | Identificador estável. Se omitido na criação, usa o UUID da zona |
+| `rule_version` | Inteiro gerado pelo Spring. Começa em 1 e sobe quando mudam polígono, EPIs ou tipo |
+| `ativa` | Booleano. Padrão `true` no PUT |
 
-### Vínculo manual
+O FastAPI carrega zonas no início da fonte, na reconexão e no CLI `--spring`.
+Uma leitura bem-sucedida atualiza o cache por câmera. Os arquivos novos usam
+o hash do identificador para distinguir câmeras mesmo em diretórios Windows
+insensíveis a maiúsculas e minúsculas. Durante indisponibilidade, a API usa
+a última lista disponível e aceita o formato anterior `<camera>.json` se o
+nome corresponder exatamente. Não há atualização periódica durante uma sessão:
+para aplicar uma alteração de zona imediatamente no piloto, encerre e inicie
+novamente a fonte. Se a consulta falhar e não houver cache válido, o provedor
+retorna uma lista vazia, registra aviso e o pipeline continua sem avaliar regras
+por zona. Um GET bem-sucedido com lista vazia atualiza o cache normalmente.
+Veja o [exemplo de cadastro](ZONAS.md).
 
-O operador seleciona uma trajetória atual e um trabalhador fictício já cadastrado. O registro deverá conter a chave conjunta, UUID do trabalhador, operador autenticado, instante, método de confirmação e motivo da alteração/invalidação. Não enviar nome, CPF ou certificados no evento da IA.
+## Eventos v0.2
 
-Regras a implementar/testar: perda de trajetória, reinício de sessão, mudança de câmera ou dúvida na associação invalidam o vínculo; dados antigos não podem permanecer como situação atual. Uma confirmação humana pode falhar, e trocas silenciosas de ID precisam ser avaliadas. O limite de idade da observação e o tempo para considerar uma trajetória perdida ainda devem ser acordados com IA/VC.
+`POST /api/v1/eventos` no Spring recebe os campos abaixo.
 
-### Consulta administrativa disponível
+| Campo | Regra |
+| --- | --- |
+| `schema_version` | `"0.2"` |
+| `event_id` | UUID, chave de idempotência |
+| `camera_id` | 1 a 100 caracteres alfanuméricos, hífen ou sublinhado |
+| `session_id` | UUID gerado a cada início ou reconexão |
+| `zone_id` | UUID da zona |
+| `timestamp` | ISO-8601 UTC, instante de captura do quadro |
+| `event_type` | `INTRUSAO`, `EPI_AUSENTE` ou `EPI_INDETERMINADO` |
+| `track_id` | Inteiro ≥ 0, efêmero e restrito à câmera e à sessão |
+| `rule_id`, `rule_version` | Identificador da regra e versão ≥ 1 |
+| `confidence` | Confiança visual de 0 a 1 ou `null` |
+| `evidence_ref` | Nome `<event_id>.jpg` ou `null` |
+| `source` | `ARQUIVO`, `WEBCAM` ou `RTSP` |
+| `explanation` | Texto em português com zona, condição, duração e regra |
 
-Após um vínculo confirmado, a futura integração poderá usar `GET /api/trabalhadores/{uuid}/capacitacoes/{codigo}/situacao`. Sem vínculo, exibir identidade não confirmada. Com vínculo, mostrar separadamente situação da capacitação e resultado da regra de acesso. A consulta implementada retorna `autorizacaoAcesso=NAO_AVALIADA`.
+O FastAPI usa o ponto dos pés e confirma entrada após 5 quadros e saída após
+10 quadros. Durante uma perda breve do track, a zona mantém presença com
+pés incertos até o limite de saída. Cada EPI usa até 15 quadros processados,
+começa após 8 observações do track e exige consenso de 70% e qualidade.
+Um quadro processado sem o track conta como falta de evidência. Sinal contraditório com diferença de confiança
+menor que 0,10 fica sem evidência. Uma condição indeterminada mantida por mais
+de 5 s em zona de EPI gera `EPI_INDETERMINADO`. Ausência exige evidência
+negativa temporal. Pés incertos impedem a abertura de evento naquele quadro.
+A chave de deduplicação usa sessão, track, zona, regra e tipo. Uma nova abertura
+exige o encerramento da condição e um intervalo mínimo de 30 s.
 
-Requisitos de capacitação/EPI por zona, atividade, regras de autorização, versões/fontes, geometria e estados de alerta ainda precisam de definição e implementação. Este contrato não presume que a consulta de treinamento, sozinha, detecte intrusão ou libere acesso.
+O pipeline grava JPEG e JSONL localmente. Com integração ativa, a fila SQLite
+é gravada antes do JSONL e processada em ordem por uma thread própria. Uma falha
+no JSONL fica registrada no log e a publicação continua. Se a gravação em
+SQLite falhar, o processo ainda tenta gravar o evento no JSONL e sinaliza o erro.
+A fila reenvia somente itens persistidos em SQLite. HTTP 200 ou 201 confirma o envio.
+Falhas de transporte, HTTP 408, 429 e 5xx têm reenvio com espera de 1 a 60 s.
+Outros 4xx ficam em `rejeitados`. O FastAPI retoma itens pendentes quando sobe.
+
+| Operação no Spring | Resultado |
+| --- | --- |
+| POST `/api/v1/eventos` | 201 novo, 200 reenvio idêntico, 409 colisão de conteúdo, 400 validação |
+| GET `/api/v1/eventos` | Mais recentes primeiro. Filtros `camera_id`, `zone_id`, `event_type`, `review_status`, `desde` e `limite` (100 padrão, 500 máximo) |
+| GET `/api/v1/eventos/{id}` | Evento ou 404 |
+| PATCH `/api/v1/eventos/{id}/revisao` | Atualiza `status` e `motivo`, obrigatório para descarte, ou 404 |
+
+O Spring adiciona `received_at`, `review_status`, `reviewed_at` e
+`review_reason`. O status inicial é `PENDENTE`. A revisão permite definir
+`CONFIRMADO`, `DESCARTADO`, `INDETERMINADO` ou reabrir como `PENDENTE`.
+O Spring ignora `review_status` no recebimento. O evento registra apenas
+referências visuais, sem campos cadastrais. O revisor fica sem identificação.
+
+## Fontes e evidências no FastAPI
+
+| Operação | Dados |
+| --- | --- |
+| POST `/api/v1/sources` | `camera_id` e `source`. Webcam aceita `webcam_index` de 0 a 255, padrão 0. RTSP exige `rtsp_url`. Retorna 201 e `id` UUID |
+| DELETE `/api/v1/sources/{id}` | 204 ao encerrar, 404 fonte ausente ou 503 se ainda estiver encerrando |
+| GET `/api/v1/sources/{id}/stream` | MJPEG, `multipart/x-mixed-replace; boundary=frame`, ou 404 |
+| GET `/api/v1/evidencias/{evidence_ref}` | JPEG identificado por UUID dentro da pasta de evidências, ou 404 |
+
+O status informa câmera, tipo, sessão e métricas por fonte. Cada fonte tem
+um tracker próprio. Uma trava protege o contador global do ByteTrack e outra
+serializa o acesso aos detectores de imagem/EPI em cache. A captura reconecta
+com espera de 1 a 30 s. URL e credenciais RTSP ficam fora das respostas e
+dos logs. Os endpoints são locais e operam sem autenticação.
+
+## Limites operacionais
+
+O H2 do Spring é volátil: reiniciar o serviço elimina zonas, eventos e revisões.
+A fila SQLite mantém apenas os itens ainda pendentes de entrega; eventos já
+confirmados pelo Spring não são reenviados automaticamente após o reinício.
+O piloto deve permanecer em loopback, sem exposição pública. Os testes com
+webcam física e transmissão de câmera RTSP, assim como a avaliação empírica
+dos eventos (T17), seguem pendentes. As medições curtas em CPU estão em
+[AVALIACAO_VC.md](AVALIACAO_VC.md). Consulte as
+[limitações e pendências operacionais](LIMITACOES_VC.md).
+
+## Pendências
+
+Aceite coletivo de D1 a D7, confirmação de licenças, autenticação e perfis,
+retenção de evidências, dados do laboratório e aceite formal da frente de
+frontend para o ajuste local T16. O vínculo
+manual entre evento e trabalhador e a proposta de observações por quadro
+de 13/11 permanecem fora do contrato ativo.

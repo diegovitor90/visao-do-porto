@@ -7,11 +7,13 @@ python-multipart==0.0.33
 pydantic==2.14.3
 pillow==13.0.0
 ultralytics==8.4.212
+# Solver requerido pelo ByteTrack. Instalado na preparação do ambiente.
+lap==0.5.12
 torch==2.15.0
 torchvision==0.29.2
 numpy==2.4.6
 opencv-python==5.0.0.93
+httpx==0.28.1
 
 # Testes existentes (detector simulado; não precisam carregar os pesos).
 pytest==9.2.0
-httpx==0.28.1

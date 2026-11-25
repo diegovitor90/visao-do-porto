@@ -1,0 +1,12 @@
+[
+  {
+    "zone_id": "5f075c74-7db4-4ba0-a854-5e6203078e8e",
+    "nome": "Área de EPI obrigatório",
+    "polygon": [[0.15, 0.55], [0.70, 0.55], [0.85, 0.90], [0.10, 0.90]],
+    "required_ppe": ["CAPACETE", "COLETE"],
+    "rule_type": "EPI_OBRIGATORIO",
+    "rule_id": "EPI-OBRIG",
+    "rule_version": 1,
+    "ativa": true
+  }
+]

@@ -1,7 +1,7 @@
 # Visão do Porto · Frontend 0.1.1
 
-Estado revisado em 17/11/2026. Interface React/Vite do piloto acadêmico, preservada
-na consolidação para a `main`. O painel, a planta, os alertas e a revisão são
+Interface React/Vite do piloto acadêmico. Documentação alinhada à implementação
+local da T16 de 24/11/2026. O painel, a planta, os alertas e a revisão são
 demonstrativos; as revisões persistem somente no navegador atual.
 
 ## Executar no Windows
@@ -17,7 +17,7 @@ npm run dev
 Em ambiente novo, executar `npm ci` com autorização de download; o lockfile é
 versionado, `node_modules` não. Abrir `http://127.0.0.1:5173`.
 
-## Conexão atual com a FastAPI v0.3.0
+## Conexão com os serviços de visão
 
 Em outro terminal, a partir da raiz do repositório:
 
@@ -27,20 +27,25 @@ cd backend/fastapi
 ```
 
 O ambiente Python e os pesos devem estar preparados conforme o [README principal](../README.md).
-O Vite encaminha `/api/v1/vision/*` diretamente para `http://127.0.0.1:8000`.
-Para outro destino, copiar `.env.example` para `.env.local`, ajustar
-`VISION_API_TARGET` e reiniciar o Vite. O upload é multipart, campo `file`.
-Esse proxy de desenvolvimento não é incluído no build de produção.
+O Vite encaminha `/api/v1/vision/*` ao destino definido por `VISION_API_TARGET`.
+O padrão sem variável é o FastAPI direto (`http://127.0.0.1:8000`). O arquivo
+`.env.example` recomenda o Spring Boot (`http://127.0.0.1:8080`), que encaminha
+as solicitações de imagem ao FastAPI. Para usar esse caminho, inicie também o
+Spring conforme o README principal.
 
-A API v0.3.0 valida JPEG/PNG e executa YOLO11n para pessoas. Retorna
-`status=COMPLETED`, `inference_performed=true`, `model=yolo11n`, dimensões e
-detecções com `bbox={x1,y1,x2,y2}`. O frontend distingue zero detecções de falha,
-renderiza caixas e confiança e também suporta respostas antigas sem inferência.
-O tipo/parser atual não preserva `model` e não restringe `status`; esse alinhamento
-fica pendente. O [contrato único](../docs/contrato-ia-backend.md) registra os campos reais.
+Copie `.env.example` para `.env.local`, ajuste o destino se necessário e reinicie
+o Vite. O proxy é de desenvolvimento e não é incluído no build de produção.
 
-O frontend ainda não passa pelo Spring Boot. A integração-alvo é frontend → Spring
-Boot → FastAPI → YOLO11n → Spring Boot → frontend e ainda será implementada.
+A tela de análise usa `POST /api/v1/vision/analyze` (YOLO11n para pessoas),
+com upload JPEG/PNG multipart no campo `file`. As APIs também disponibilizam
+`POST /api/v1/vision/analyze/ppe` para YOLO26s, mas a tela atual não seleciona
+essa rota. O parser renderiza caixas e confiança e distingue zero detecções de
+falha. O tipo/parser atual não preserva `model` e não restringe `status`.
+
+A T16 adiciona os rótulos `vest` (Colete), `no_helmet` (Sem capacete) e
+`no_vest` (Sem colete), preservando `safety_vest` (Colete) e os demais rótulos.
+O aceite formal da frente de frontend segue pendente. Consulte o
+[contrato IA–backend](../docs/contrato-ia-backend.md).
 
 ## Exemplo, revisão e estrutura
 
@@ -69,6 +74,11 @@ autorização para download. Não executar outro Vite na porta 5173 durante a su
 O diagnóstico de 17/11 aprovou nove testes e ignorou um teste optativo; a
 [validação da consolidação](../docs/VALIDACAO_CONSOLIDACAO_2026-11-17.md) registra a reexecução.
 
+Na validação local da T16, o build e nove testes Playwright passaram antes e
+depois; um teste opcional permaneceu desabilitado. Os dois destinos do proxy
+e os rótulos foram verificados no navegador, conforme o
+[acompanhamento](../docs/ACOMPANHAMENTO_VC.md).
+
 Os fixtures de inferência usam `ANALYZED` e não incluem `model`. O teste optativo
 habilitado por `VISION_API_SMOKE_IMAGE` ainda espera a v0.2.0, sem inferência;
 não habilitá-lo para alegar teste da v0.3.0. Ele precisa ser atualizado em uma
@@ -76,12 +86,16 @@ próxima etapa. A suíte padrão verifica respostas simuladas, não YOLO real.
 
 ## Limites e publicação
 
-Não há autenticação, câmera operacional integrada ao painel, vínculo com cadastro
-Spring, edição real de polígonos, detecção de EPIs ou auditoria persistente no
-servidor. Mapa/alertas ilustrativos não comprovam funcionalidades de IA.
+Não há autenticação, câmera operacional integrada ao painel, vínculo do painel
+com o cadastro Spring, edição real de polígonos ou revisão persistida no servidor
+pela interface. O backend possui APIs de zonas, eventos, revisão e streaming,
+mas essas funcionalidades não estão conectadas às telas de operações. A API de
+EPI também está disponível, sem integração de seleção dessa rota na tela atual.
+Mapa e alertas ilustrativos não comprovam funcionalidades de IA.
 Os ativos SVG são locais; a fotografia usada na validação Python não é distribuída.
 
-O frontend 0.1.1 acompanha o backend e a documentação na `main`. Preservar o
-`package-lock.json`; excluir `node_modules`, `dist`, relatórios e `.env.local`.
-Em produção será necessário configurar o encaminhamento HTTP no servidor; o
-destino final deverá acompanhar a futura integração via Spring Boot.
+Preserve `package-lock.json`; exclua `node_modules`, `dist`, relatórios e
+`.env.local` do versionamento. O piloto deve permanecer em loopback. Antes de
+uma implantação operacional, serão necessários controle de acesso, configuração
+do encaminhamento HTTP e validações adicionais. Veja as
+[limitações do piloto](../docs/LIMITACOES_VC.md).

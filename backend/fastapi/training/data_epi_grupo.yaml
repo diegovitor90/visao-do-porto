@@ -1,0 +1,11 @@
+names:
+- helmet
+- no_helmet
+- no_vest
+- person
+- vest
+nc: 5
+path: /kaggle/temp/ppe_grupos
+test: test/images
+train: train/images
+val: valid/images

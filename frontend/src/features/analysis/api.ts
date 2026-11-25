@@ -52,4 +52,11 @@ export async function analyzeImage(file: File, signal: AbortSignal): Promise<Ana
 }
 
 export const percent = (n: number) => new Intl.NumberFormat('pt-BR', { style: 'percent', maximumFractionDigits: 2 }).format(n)
-export const classLabel = (name: string) => ({ person: 'Pessoa', helmet: 'Capacete', safety_vest: 'Colete' }[name] ?? name)
+export const classLabel = (name: string) => ({
+  person: 'Pessoa',
+  helmet: 'Capacete',
+  safety_vest: 'Colete',
+  vest: 'Colete',
+  no_helmet: 'Sem capacete',
+  no_vest: 'Sem colete',
+}[name] ?? name)

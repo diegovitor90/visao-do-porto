@@ -2,7 +2,6 @@
 
 import argparse
 from collections import deque
-import os
 from pathlib import Path
 import sys
 from time import perf_counter
@@ -74,14 +73,9 @@ def main():
         return 1
 
     capture = None
-    previous_dir = Path.cwd()
     image_path = args.image.resolve()
     try:
-        # O detector existente resolve MODEL_NAME relativamente ao diretório atual.
-        os.chdir(BASE_DIR)
-        if not (BASE_DIR / "yolo11n.pt").is_file():
-            raise RuntimeError("Pesos yolo11n.pt não encontrados junto ao script. Nenhum download foi iniciado.")
-        from vision_detector import carregar_modelo, detectar_pessoas
+        from vision.detector import carregar_modelo, detectar_pessoas
 
         if args.webcam is None:
             if not image_path.is_file():
@@ -157,7 +151,6 @@ def main():
             cv2.destroyAllWindows()
         except cv2.error:
             pass
-        os.chdir(previous_dir)
 
 
 if __name__ == "__main__":
